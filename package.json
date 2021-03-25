@@ -1,0 +1,12 @@
+{
+  "name": "physics-animation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch:js-bouncing-ball": "parcel watch ./bouncing-ball/js/index.js --out-dir ./bouncing-ball/js --out-file bundle.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

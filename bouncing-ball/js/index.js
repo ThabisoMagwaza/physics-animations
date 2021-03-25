@@ -1,3 +1,6 @@
+import { Environment } from "./objects/Environment";
+import { Ball } from "./objects/Ball";
+
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
 
@@ -69,33 +72,3 @@ function onEachStepSVG(ball) {
   cicleSVG.setAttribute("cx", `${ballSVG.x}`);
   cicleSVG.setAttribute("cy", `${ballSVG.y}`);
 }
-
-function Ball(
-  opt = { radius: 20, color: "#0000ff", x: 50, y: 50, vx: 2, vy: 2 }
-) {
-  this.radius = opt.radius ?? 20;
-  this.color = opt.color ?? "#0000ff";
-  this.x = opt.x ?? 50;
-  this.y = opt.y ?? 50;
-  this.vx = opt.vx ?? 2;
-  this.vy = opt.vy ?? 0;
-}
-
-Ball.prototype.drawOnCanvas = function (ctx) {
-  ctx.fillStyle = this.color;
-  ctx.beginPath();
-  ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-  ctx.closePath();
-  ctx.fill();
-};
-
-function Environment() {
-  this.gravity = 0.1;
-  this.width = 500;
-  this.height = 500;
-  this.gravity = 0.1;
-}
-
-Environment.prototype.clearCanvas = function (ctx) {
-  ctx.clearRect(0, 0, this.width, this.height);
-};
