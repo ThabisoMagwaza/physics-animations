@@ -178,21 +178,14 @@ var _Ball = require("./objects/Ball");
 
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
-var sceneSVG = document.querySelector("svg");
-var cicleSVG = document.querySelector(".cirlce");
 var env = new _Environment.Environment();
 var ballCANVAS = new _Ball.Ball({
   color: "#ff0000"
 });
-var ballSVG = new _Ball.Ball(); // Set SVG Scene
-
-sceneSVG.setAttribute("width", "".concat(env.width, "px"));
-sceneSVG.setAttribute("height", "".concat(env.height, "px"));
 window.onload = init;
 
 function init() {
   onEachStepCANVAS(ballCANVAS);
-  onEachStepSVG(ballSVG);
   window.requestAnimationFrame(init);
 }
 
@@ -227,30 +220,6 @@ function onEachStepCANVAS(ball) {
 function drawBall(environment, context, ball) {
   environment.clearCanvas(context);
   ball.drawOnCanvas(context);
-}
-
-function onEachStepSVG(ball) {
-  ball.vy += env.gravity;
-  ball.x += ball.vx;
-  ball.y += ball.vy;
-
-  if (ball.y > env.height - ball.radius) {
-    ball.y = env.height - ball.radius;
-    ball.vy *= -0.8;
-  }
-
-  if (ball.x > env.width - ball.radius) {
-    ball.x = env.width - ball.radius;
-    ball.vx *= -0.8;
-  }
-
-  if (ball.x < ball.radius) {
-    ball.x = ball.radius;
-    ball.vx *= -0.8;
-  }
-
-  cicleSVG.setAttribute("cx", "".concat(ballSVG.x));
-  cicleSVG.setAttribute("cy", "".concat(ballSVG.y));
 }
 },{"./objects/Environment":"objects/Environment.js","./objects/Ball":"objects/Ball.js"}],"../../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];

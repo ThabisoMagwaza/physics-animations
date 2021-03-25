@@ -4,22 +4,13 @@ import { Ball } from "./objects/Ball";
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
 
-const sceneSVG = document.querySelector("svg");
-const cicleSVG = document.querySelector(".cirlce");
-
 const env = new Environment();
 const ballCANVAS = new Ball({ color: "#ff0000" });
-const ballSVG = new Ball();
-
-// Set SVG Scene
-sceneSVG.setAttribute("width", `${env.width}px`);
-sceneSVG.setAttribute("height", `${env.height}px`);
 
 window.onload = init;
 
 function init() {
   onEachStepCANVAS(ballCANVAS);
-  onEachStepSVG(ballSVG);
   window.requestAnimationFrame(init);
 }
 
@@ -49,26 +40,4 @@ function onEachStepCANVAS(ball) {
 function drawBall(environment, context, ball) {
   environment.clearCanvas(context);
   ball.drawOnCanvas(context);
-}
-
-function onEachStepSVG(ball) {
-  ball.vy += env.gravity;
-
-  ball.x += ball.vx;
-  ball.y += ball.vy;
-
-  if (ball.y > env.height - ball.radius) {
-    ball.y = env.height - ball.radius;
-    ball.vy *= -0.8;
-  }
-  if (ball.x > env.width - ball.radius) {
-    ball.x = env.width - ball.radius;
-    ball.vx *= -0.8;
-  }
-  if (ball.x < ball.radius) {
-    ball.x = ball.radius;
-    ball.vx *= -0.8;
-  }
-  cicleSVG.setAttribute("cx", `${ballSVG.x}`);
-  cicleSVG.setAttribute("cy", `${ballSVG.y}`);
 }

@@ -8,23 +8,13 @@
     width: 100vw;
     height: 100vh;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    justify-items: center;
-  }
-
-  canvas,
-  svg {
-    margin: 10px;
+    place-items: center;
   }
 
   canvas {
-   
     border: 1px solid black;
   }
 
-  svg {
-    outline: 1px solid black;
-  }
 
   h1 {
     align-self: end;
