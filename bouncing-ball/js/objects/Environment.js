@@ -3,6 +3,7 @@ export function Environment() {
   this.width = 500;
   this.height = 500;
   this.gravity = 0.1;
+  this.isPlaying = true;
 }
 
 Environment.prototype.clearCanvas = function (ctx) {

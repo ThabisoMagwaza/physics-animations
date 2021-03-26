@@ -130,6 +130,7 @@ function Environment() {
   this.width = 500;
   this.height = 500;
   this.gravity = 0.1;
+  this.isPlaying = true;
 }
 
 Environment.prototype.clearCanvas = function (ctx) {
@@ -180,14 +181,28 @@ var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
 var env = new _Environment.Environment();
 var ballCANVAS = new _Ball.Ball({
-  color: "#ff0000"
+  color: "#ff0000",
+  vy: -2,
+  vx: 4,
+  y: 200,
+  radius: 20
 });
-window.onload = init;
+window.onload = playBouncingBallAnim;
 
-function init() {
-  onEachStepCANVAS(ballCANVAS);
-  window.requestAnimationFrame(init);
+function playBouncingBallAnim() {
+  if (env.isPlaying) {
+    onEachStepCANVAS(ballCANVAS);
+    window.requestAnimationFrame(playBouncingBallAnim);
+  }
 }
+
+document.querySelector("canvas").addEventListener("mousedown", function () {
+  return env.isPlaying = false;
+});
+document.querySelector("canvas").addEventListener("mouseup", function () {
+  env.isPlaying = true;
+  playBouncingBallAnim();
+});
 
 function onEachStepCANVAS(ball) {
   ball.vy += env.gravity; // gravity increases the vertical speed
@@ -200,19 +215,28 @@ function onEachStepCANVAS(ball) {
     // if the ball hits the ground
     ball.y = canvas.height - ball.radius; // reposition it at the ground
 
-    ball.vy *= -0.5; // then reverse and reduce its vertical speed.
+    ball.vy *= -0.6; // then reverse and reduce its vertical speed.
   }
 
   if (ball.x > canvas.width - ball.radius) {
     // if ball goes beyond canvas
     ball.x = canvas.width - ball.radius;
-    ball.vx *= -0.5; // bounce back
+    ball.vx *= -0.8; // bounce back
   }
 
   if (ball.x < ball.radius) {
     ball.x = ball.radius;
-    ball.vx *= -0.5;
+    ball.vx *= -0.8;
   }
+
+  var friction = 0.5;
+
+  if (ball.y === canvas.height - ball.radius) {
+    if (Math.abs(ball.vx) < 0.2) return ball.vx = 0;
+    ball.vx > 0 ? ball.vx -= friction : ball.vx += friction;
+  } // console.log(ball.vx);
+  // console.log(ball.vy);
+
 
   drawBall(env, context, ball);
 }
@@ -249,7 +273,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63551" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58208" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -426,4 +450,4 @@ function hmrAcceptRun(bundle, id) {
   }
 }
 },{}]},{},["../../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
-//# sourceMappingURL=/bundle.js.map
+//# sourceMappingURL=bundle.js.map

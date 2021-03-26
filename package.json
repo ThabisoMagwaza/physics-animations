@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch:js-bouncing-ball": "parcel watch ./bouncing-ball/js/index.js --out-dir ./bouncing-ball/js --out-file bundle.js"
+    "watch:js-bouncing-ball": "parcel watch ./bouncing-ball/js/index.js --out-dir ./bouncing-ball/js --out-file bundle.js --public-url ."
   },
   "keywords": [],
   "author": "",
