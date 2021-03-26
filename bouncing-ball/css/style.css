@@ -1,21 +1,59 @@
+/* ----------------------------------------- */
+/* GLOBAL STYLES */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
 
+  html {
+    font-family: 'Montserrat';
+  }
+
+/* ----------------------------------------- */
+/* LAYOUT */
   body {
     width: 100vw;
     height: 100vh;
     display: grid;
     place-items: center;
+
+    position: relative;
   }
+
 
   canvas {
     border: 1px solid black;
   }
 
-
-  h1 {
-    align-self: end;
+  .container {
+    position: relative;
   }
+
+/* ----------------------------------------- */
+/* TYPOGRAPHY */
+
+  .tooltip {
+    display: inline-block;
+    /* max-width: 80px; */
+    padding: 10px;
+    background-color: orangered;
+    border-radius: 3px;
+    color: #ffffff;
+    font-size: 12px;
+
+    position: absolute;
+    pointer-events: none;
+
+    will-change: opacity,left,right;
+    opacity: 0;
+
+    transition: opacity,left,right .3s ease;
+  }
+
+  body:hover .tooltip {
+    opacity: 1;
+  }
+
+
+  

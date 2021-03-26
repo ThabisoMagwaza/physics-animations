@@ -3,6 +3,7 @@ import { Ball } from "./objects/Ball";
 
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
+const tooltip = document.querySelector(".tooltip");
 
 const env = new Environment();
 const ballCANVAS = new Ball({
@@ -29,6 +30,14 @@ document
 document.querySelector("canvas").addEventListener("mouseup", () => {
   env.isPlaying = true;
   playBouncingBallAnim();
+});
+
+document.querySelector("canvas").addEventListener("mousemove", (e) => {
+  const x = e.pageX;
+  const y = e.pageY;
+
+  tooltip.style.left = `${x}px`;
+  tooltip.style.top = `${y - 30}px`;
 });
 
 function onEachStepCANVAS(ball) {

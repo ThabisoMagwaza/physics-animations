@@ -179,6 +179,7 @@ var _Ball = require("./objects/Ball");
 
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
+var tooltip = document.querySelector(".tooltip");
 var env = new _Environment.Environment();
 var ballCANVAS = new _Ball.Ball({
   color: "#ff0000",
@@ -202,6 +203,12 @@ document.querySelector("canvas").addEventListener("mousedown", function () {
 document.querySelector("canvas").addEventListener("mouseup", function () {
   env.isPlaying = true;
   playBouncingBallAnim();
+});
+document.querySelector("canvas").addEventListener("mousemove", function (e) {
+  var x = e.pageX;
+  var y = e.pageY;
+  tooltip.style.left = "".concat(x, "px");
+  tooltip.style.top = "".concat(y - 30, "px");
 });
 
 function onEachStepCANVAS(ball) {
