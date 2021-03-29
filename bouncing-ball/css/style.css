@@ -16,6 +16,7 @@
     width: 100vw;
     height: 100vh;
     display: grid;
+
     place-items: center;
 
     position: relative;
@@ -24,10 +25,14 @@
 
   canvas {
     border: 1px solid black;
+    grid-column: -1/1;
   }
 
   .container {
     position: relative;
+    display: grid;
+    grid-template-columns: min-content min-content;
+    justify-items: center;
   }
 
 /* ----------------------------------------- */
@@ -35,24 +40,22 @@
 
   .tooltip {
     display: inline-block;
-    /* max-width: 80px; */
+    max-width: 200px;
     padding: 10px;
-    background-color: orangered;
+
     border-radius: 3px;
     color: #ffffff;
     font-size: 12px;
 
-    position: absolute;
     pointer-events: none;
-
-    will-change: opacity,left,right;
-    opacity: 0;
-
-    transition: opacity,left,right .3s ease;
   }
 
-  body:hover .tooltip {
-    opacity: 1;
+  .tooltip--1 {
+    background-color: orangered;
+  }
+
+  .tooltip--2 {
+    background-color:blueviolet
   }
 
 

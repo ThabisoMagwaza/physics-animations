@@ -126,10 +126,9 @@ Object.defineProperty(exports, "__esModule", {
 exports.Environment = Environment;
 
 function Environment() {
-  this.gravity = 0.1;
+  this.gravity = 10;
   this.width = 500;
   this.height = 500;
-  this.gravity = 0.1;
   this.isPlaying = true;
 }
 
@@ -180,43 +179,55 @@ var _Ball = require("./objects/Ball");
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
 var tooltip = document.querySelector(".tooltip");
-var env = new _Environment.Environment();
-var ballCANVAS = new _Ball.Ball({
-  color: "#ff0000",
-  vy: -2,
-  vx: 4,
-  y: 200,
-  radius: 20
-});
-window.onload = playBouncingBallAnim;
+window.onload = init;
+var env, ballCANVAS, CURRENT_TIME; // DRAG AND DROP
 
-function playBouncingBallAnim() {
-  if (env.isPlaying) {
-    onEachStepCANVAS(ballCANVAS);
-    window.requestAnimationFrame(playBouncingBallAnim);
+canvas.addEventListener("mousemove", function (e) {
+  var canvasRect = canvas.getBoundingClientRect();
+  var mousePosX = e.clientX - canvasRect.left;
+  var mousePosY = e.clientY - canvasRect.top; // check if mouse is hovering over the ball
+
+  var halfRadius = ballCANVAS.radius / 2;
+
+  if (mousePosX >= ballCANVAS.x - halfRadius && mousePosX <= ballCANVAS.x + halfRadius && mousePosY >= ballCANVAS.y - halfRadius && mousePosY <= ballCANVAS.y + halfRadius) {
+    console.log("hovering");
+    canvas.style.cursor = "pointer";
+  } else {
+    canvas.style.cursor = "auto";
   }
-}
+}); // PAUSE AND PLAY
 
-document.querySelector("canvas").addEventListener("mousedown", function () {
+canvas.addEventListener("mousedown", function () {
   return env.isPlaying = false;
 });
-document.querySelector("canvas").addEventListener("mouseup", function () {
+canvas.addEventListener("mouseup", function () {
   env.isPlaying = true;
-  playBouncingBallAnim();
+  animateFrame();
 });
-document.querySelector("canvas").addEventListener("mousemove", function (e) {
-  var x = e.pageX;
-  var y = e.pageY;
-  tooltip.style.left = "".concat(x, "px");
-  tooltip.style.top = "".concat(y - 30, "px");
-});
+
+function init() {
+  env = new _Environment.Environment();
+  ballCANVAS = new _Ball.Ball({
+    color: "#ff0000",
+    vy: -100,
+    vx: 1000,
+    y: 200,
+    radius: 20
+  });
+  CURRENT_TIME = new Date().getTime();
+  animateFrame();
+} // ANIMATION LOOP
+
 
 function onEachStepCANVAS(ball) {
+  var dt = (new Date().getTime() - CURRENT_TIME) / 1000; // time elapsed since last call
+
+  CURRENT_TIME = new Date().getTime();
   ball.vy += env.gravity; // gravity increases the vertical speed
 
-  ball.x += ball.vx; // horizontal speed increases horizontal position
+  ball.x += ball.vx * dt; // horizontal speed increases horizontal position
 
-  ball.y += ball.vy; // vertical speed increases vertical position
+  ball.y += ball.vy * dt; // vertical speed increases vertical position
 
   if (ball.y > canvas.height - ball.radius) {
     // if the ball hits the ground
@@ -239,13 +250,17 @@ function onEachStepCANVAS(ball) {
   var friction = 0.5;
 
   if (ball.y === canvas.height - ball.radius) {
-    if (Math.abs(ball.vx) < 0.2) return ball.vx = 0;
-    ball.vx > 0 ? ball.vx -= friction : ball.vx += friction;
-  } // console.log(ball.vx);
-  // console.log(ball.vy);
-
+    Math.abs(ball.vx) < 0.2 ? ball.vx = 0 : ball.vx > 0 ? ball.vx -= friction : ball.vx += friction;
+  }
 
   drawBall(env, context, ball);
+}
+
+function animateFrame() {
+  if (env.isPlaying) {
+    window.requestAnimationFrame(animateFrame);
+    onEachStepCANVAS(ballCANVAS);
+  }
 }
 
 function drawBall(environment, context, ball) {
@@ -280,7 +295,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58208" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59552" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -1,8 +1,7 @@
 export function Environment() {
-  this.gravity = 0.1;
+  this.gravity = 10;
   this.width = 500;
   this.height = 500;
-  this.gravity = 0.1;
   this.isPlaying = true;
 }
 
