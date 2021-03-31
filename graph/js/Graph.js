@@ -178,4 +178,30 @@ export class Graph {
       this.ctx.stroke();
     }
   }
+
+  /**
+   * Calculate x-y value for a given function
+   * @param {Function} fn
+   * @param {Number} xmin
+   * @param {Number} xmax
+   * @param {Number} numPoints
+   * @returns {Object} Object containing one array with the x-values and another with the corresponding y-values
+   */
+  createPoints(fn, xmin, xmax, numPoints = 100) {
+    const retObj = {
+      xVals: [],
+      yVals: [],
+    };
+    const xtick = (xmax - xmin) / numPoints;
+    for (let i = xmin; i <= xmax; i += xtick) {
+      retObj.xVals.push(i);
+      retObj.yVals.push(fn(i));
+    }
+    // ensure that the graph ends at xmax
+    if (retObj.xVals[retObj.xVals.length - 1] !== xmax) {
+      retObj.xVals[retObj.xVals.length - 1] = xmax;
+      retObj.yVals[retObj.yVals.length - 1] = fn(xmax);
+    }
+    return retObj;
+  }
 }

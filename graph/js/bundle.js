@@ -320,6 +320,38 @@ var Graph = /*#__PURE__*/function () {
         this.ctx.stroke();
       }
     }
+    /**
+     * Calculate x-y value for a given function
+     * @param {Function} fn
+     * @param {Number} xmin
+     * @param {Number} xmax
+     * @param {Number} numPoints
+     * @returns {Object} Object containing one array with the x-values and another with the corresponding y-values
+     */
+
+  }, {
+    key: "createPoints",
+    value: function createPoints(fn, xmin, xmax) {
+      var numPoints = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 100;
+      var retObj = {
+        xVals: [],
+        yVals: []
+      };
+      var xtick = (xmax - xmin) / numPoints;
+
+      for (var i = xmin; i <= xmax; i += xtick) {
+        retObj.xVals.push(i);
+        retObj.yVals.push(fn(i));
+      } // ensure that the graph ends at xmax
+
+
+      if (retObj.xVals[retObj.xVals.length - 1] !== xmax) {
+        retObj.xVals[retObj.xVals.length - 1] = xmax;
+        retObj.yVals[retObj.yVals.length - 1] = fn(xmax);
+      }
+
+      return retObj;
+    }
   }]);
 
   return Graph;
@@ -336,15 +368,15 @@ var context = canvas.getContext("2d");
 var graph = new _Graph.Graph(context, -4, 4, 0, 20, canvas.width / 2, 380, 450, 350);
 graph.drawgrid(1, 0.2, 5, 1);
 graph.drawaxes();
-var xA = new Array();
-var yA = new Array();
 
-for (var i = 0; i <= 100; i++) {
-  xA[i] = (i - 50) * 0.08;
-  yA[i] = xA[i] * xA[i];
-}
+var _graph$createPoints = graph.createPoints(function (x) {
+  return 2 * x + 1;
+}, 0, 4),
+    xVals = _graph$createPoints.xVals,
+    yVals = _graph$createPoints.yVals;
 
-graph.plot(xA, yA);
+debugger;
+graph.plot(xVals, yVals);
 },{"./Graph":"Graph.js"}],"../../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -373,7 +405,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50151" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49497" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
