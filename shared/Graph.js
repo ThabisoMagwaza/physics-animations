@@ -151,15 +151,9 @@ export class Graph {
     this.ctx.fillStyle = color;
     this.ctx.strokeStyle = color;
 
-    const xvalsPx = xvals.map((x) => {
-      const pxFromOrigin = Math.abs(x * this.xUnitToPxMult);
-      return x < 0 ? this.x0 - pxFromOrigin : this.x0 + pxFromOrigin;
-    });
+    const xvalsPx = xvals.map((x) => this.xValToPx(x));
 
-    const yvalsPx = yvals.map((y) => {
-      const pxFromOrigin = Math.abs(y * this.yUnitToPxMult);
-      return y < 0 ? this.y0 + pxFromOrigin : this.y0 - pxFromOrigin;
-    });
+    const yvalsPx = yvals.map((y) => this.yValToPx(y));
 
     if (dots) {
       for (let i = 0; i < xvalsPx.length; i++) {
@@ -177,6 +171,26 @@ export class Graph {
       }
       this.ctx.stroke();
     }
+  }
+
+  /**
+   * Converts user y-val to px equivalent on graph
+   * @param {Number} val
+   * @returns {Number}
+   */
+  yValToPx(val) {
+    const pxFromOrigin = Math.abs(val * this.yUnitToPxMult);
+    return val < 0 ? this.y0 + pxFromOrigin : this.y0 - pxFromOrigin;
+  }
+
+  /**
+   * Converst user x-val to px equivalent on graph
+   * @param {Number} val
+   * @returns {Number}
+   */
+  xValToPx(val) {
+    const pxFromOrigin = Math.abs(val * this.xUnitToPxMult);
+    return val < 0 ? this.x0 - pxFromOrigin : this.x0 + pxFromOrigin;
   }
 
   /**

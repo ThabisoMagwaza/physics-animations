@@ -117,7 +117,41 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"Graph.js":[function(require,module,exports) {
+})({"../../shared/Ball.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Ball = Ball;
+
+function Ball() {
+  var _opt$radius, _opt$color, _opt$x, _opt$y, _opt$vx, _opt$vy;
+
+  var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+    radius: 20,
+    color: "#0000ff",
+    x: 50,
+    y: 50,
+    vx: 2,
+    vy: 2
+  };
+  this.radius = (_opt$radius = opt.radius) !== null && _opt$radius !== void 0 ? _opt$radius : 20;
+  this.color = (_opt$color = opt.color) !== null && _opt$color !== void 0 ? _opt$color : "#0000ff";
+  this.x = (_opt$x = opt.x) !== null && _opt$x !== void 0 ? _opt$x : 50;
+  this.y = (_opt$y = opt.y) !== null && _opt$y !== void 0 ? _opt$y : 50;
+  this.vx = (_opt$vx = opt.vx) !== null && _opt$vx !== void 0 ? _opt$vx : 2;
+  this.vy = (_opt$vy = opt.vy) !== null && _opt$vy !== void 0 ? _opt$vy : 0;
+}
+
+Ball.prototype.drawOnCanvas = function (ctx) {
+  ctx.fillStyle = this.color;
+  ctx.beginPath();
+  ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+  ctx.closePath();
+  ctx.fill();
+};
+},{}],"../../shared/Graph.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -293,12 +327,10 @@ var Graph = /*#__PURE__*/function () {
       this.ctx.fillStyle = color;
       this.ctx.strokeStyle = color;
       var xvalsPx = xvals.map(function (x) {
-        var pxFromOrigin = Math.abs(x * _this.xUnitToPxMult);
-        return x < 0 ? _this.x0 - pxFromOrigin : _this.x0 + pxFromOrigin;
+        return _this.xValToPx(x);
       });
       var yvalsPx = yvals.map(function (y) {
-        var pxFromOrigin = Math.abs(y * _this.yUnitToPxMult);
-        return y < 0 ? _this.y0 + pxFromOrigin : _this.y0 - pxFromOrigin;
+        return _this.yValToPx(y);
       });
 
       if (dots) {
@@ -319,6 +351,30 @@ var Graph = /*#__PURE__*/function () {
 
         this.ctx.stroke();
       }
+    }
+    /**
+     * Converts user y-val to px equivalent on graph
+     * @param {Number} val
+     * @returns {Number}
+     */
+
+  }, {
+    key: "yValToPx",
+    value: function yValToPx(val) {
+      var pxFromOrigin = Math.abs(val * this.yUnitToPxMult);
+      return val < 0 ? this.y0 + pxFromOrigin : this.y0 - pxFromOrigin;
+    }
+    /**
+     * Converst user x-val to px equivalent on graph
+     * @param {Number} val
+     * @returns {Number}
+     */
+
+  }, {
+    key: "xValToPx",
+    value: function xValToPx(val) {
+      var pxFromOrigin = Math.abs(val * this.xUnitToPxMult);
+      return val < 0 ? this.x0 - pxFromOrigin : this.x0 + pxFromOrigin;
     }
     /**
      * Calculate x-y value for a given function
@@ -361,23 +417,62 @@ exports.Graph = Graph;
 },{}],"index.js":[function(require,module,exports) {
 "use strict";
 
-var _Graph = require("./Graph");
+var _Ball = require("../../shared/Ball");
+
+var _Graph = require("../../shared/Graph");
 
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
-var graph = new _Graph.Graph(context, -4, 4, 0, 20, canvas.width / 2, 380, 450, 350);
-graph.drawgrid(1, 0.2, 5, 1);
+var graph = new _Graph.Graph(context, -2.5, 2.5, -10, 10, canvas.width / 2, 250, 450, 350);
+graph.drawgrid(1, 0.1, 2, 0.4);
 graph.drawaxes();
 
-var _graph$createPoints = graph.createPoints(function (x) {
-  return 2 * x + 1;
-}, 0, 4),
+var fn = function fn(x) {
+  return -0.5 * Math.pow(x, 5) + 3 * Math.pow(x, 3) + Math.pow(x, 2) - 2 * x - 3;
+};
+
+var _graph$createPoints = graph.createPoints(fn, -2.5, 2.5),
     xVals = _graph$createPoints.xVals,
     yVals = _graph$createPoints.yVals;
 
-debugger;
 graph.plot(xVals, yVals);
-},{"./Graph":"Graph.js"}],"../../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var ball = new _Ball.Ball({
+  radius: 10
+});
+var interval;
+var n = 0;
+placeBall();
+animateBall();
+
+function animateBall() {
+  interval = setupTimer();
+}
+
+function setupTimer() {
+  return setInterval(moveBall, 1000 / 60);
+}
+
+function placeBall() {
+  ball.x = graph.xValToPx(xVals[0]);
+  ball.y = graph.yValToPx(yVals[0]);
+  ball.drawOnCanvas(context);
+}
+
+function moveBall() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  graph.drawgrid(1, 0.1, 2, 0.4);
+  graph.drawaxes();
+  graph.plot(xVals, yVals);
+  ball.x = graph.xValToPx(xVals[n]);
+  ball.y = graph.yValToPx(yVals[n]);
+  ball.drawOnCanvas(context);
+  n++;
+
+  if (n === xVals.length) {
+    clearInterval(interval);
+  }
+}
+},{"../../shared/Ball":"../../shared/Ball.js","../../shared/Graph":"../../shared/Graph.js"}],"../../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -405,7 +500,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49497" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51712" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
