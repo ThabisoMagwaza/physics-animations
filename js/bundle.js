@@ -216,7 +216,7 @@ var Vector2D = /*#__PURE__*/function () {
   }, {
     key: "addScaled",
     value: function addScaled(vec, k) {
-      return new Vector2D(this.x, this.y).incremenetBy(vec.scaleBy(k));
+      return this.clone().incremenetBy(vec.clone().scaleBy(k));
     }
     /**
      * Increments the vector by a given vector
@@ -1039,7 +1039,86 @@ function GraphFn(canvas, context) {
     }
   }
 }
-},{"../shared/Ball":"shared/Ball.js","../shared/Graph":"shared/Graph.js"}],"index.js":[function(require,module,exports) {
+},{"../shared/Ball":"shared/Ball.js","../shared/Graph":"shared/Graph.js"}],"simulations/projectile-test.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = ProjectileTest;
+
+var _Ball = require("../shared/Ball2");
+
+var _Vector2D = require("../shared/Vector2D");
+
+function ProjectileTest(canvas, context) {
+  var ball1, ball2, t, t0, dt, animId;
+  var pos0 = new _Vector2D.Vector2D(100, 350);
+  var velo0 = new _Vector2D.Vector2D(20, -80);
+  var acc = new _Vector2D.Vector2D(0, 10);
+  var animTime = 16;
+  window.onload = init;
+
+  function init() {
+    ball1 = new _Ball.Ball({
+      radius: 15,
+      color: "#000000",
+      gradient: true
+    });
+    ball1.pos2D = pos0.clone();
+    ball1.velo2D = velo0.clone();
+    ball2 = new _Ball.Ball({
+      radius: 15,
+      color: "#aaaaaa",
+      gradient: true
+    });
+    ball2.pos2D = pos0.clone();
+    ball2.velo2D = velo0.clone();
+    ball1.draw(context);
+    ball2.draw(context);
+    t0 = new Date().getTime();
+    t = 0;
+    animateFrame();
+  }
+
+  function animateFrame() {
+    animId = requestAnimationFrame(animateFrame, canvas);
+    onTimer();
+  }
+
+  function onTimer() {
+    var t1 = new Date().getTime();
+    dt = 0.001 * (t1 - t0);
+    if (dt > 0.2) dt = 0; // for for if user switches tab
+
+    t += dt;
+    t0 = t1;
+
+    if (t < animTime) {
+      move();
+    } else {
+      stop();
+    }
+  }
+
+  function move() {
+    // Numerical Euler solution
+    ball1.pos2D = ball1.pos2D.addScaled(ball1.velo2D, dt);
+    ball1.velo2D = ball1.velo2D.addScaled(acc, dt); // Analytical solution
+
+    ball2.pos2D = pos0.addScaled(velo0, t).addScaled(acc, 0.5 * Math.pow(t, 2));
+    ball2.velo2D = velo0.addScaled(acc, t); // draw
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    ball1.draw(context);
+    ball2.draw(context);
+  }
+
+  function stop() {
+    cancelAnimationFrame(animId);
+  }
+}
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _ballParticle = _interopRequireDefault(require("./simulations/ball-particle"));
@@ -1050,6 +1129,8 @@ var _calculus = _interopRequireDefault(require("./simulations/calculus"));
 
 var _graph = _interopRequireDefault(require("./simulations/graph"));
 
+var _projectileTest = _interopRequireDefault(require("./simulations/projectile-test"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var canvas = document.querySelector("canvas");
@@ -1057,7 +1138,9 @@ var context = canvas.getContext("2d"); // ballParticles(canvas, context);
 // bouncingBall(canvas, context);
 // Calculus(canvas, context);
 // GraphFn(canvas, context);
-},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+(0, _projectileTest.default)(canvas, context);
+},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

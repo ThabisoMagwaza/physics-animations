@@ -64,7 +64,7 @@ export class Vector2D {
    * @param {Number} k
    */
   addScaled(vec, k) {
-    return new Vector2D(this.x, this.y).incremenetBy(vec.scaleBy(k));
+    return this.clone().incremenetBy(vec.clone().scaleBy(k));
   }
 
   /**

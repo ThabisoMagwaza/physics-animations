@@ -4,10 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch:js-bouncing-ball": "parcel watch ./bouncing-ball/js/index.js --out-dir ./bouncing-ball/js --out-file bundle.js --public-url .",
-    "watch:js-graph": "parcel watch ./graph/js/index.js --out-dir ./graph/js --out-file bundle.js --public-url .",
-    "watch:js-calculus": "parcel watch ./calculus/js/index.js --out-dir ./calculus/js --out-file bundle.js --public-url .",
-    "watch:js-ball-particle": "parcel watch ./ball-particle/js/index.js --out-dir ./ball-particle/js --out-file bundle.js --public-url .",
     "watch:js-animation": "parcel watch ./js/index.js --out-dir ./js --out-file bundle.js --public-url ."
   },
   "keywords": [],
