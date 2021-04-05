@@ -191,7 +191,7 @@ export class Graph {
    * @param {Number} numPoints
    * @returns {Object} Object containing one array with the x-values and another with the corresponding y-values
    */
-  createPoints(fn, xmin, xmax, numPoints = 100) {
+  static createPoints(fn, xmin, xmax, numPoints = 100) {
     const retObj = {
       xVals: [],
       yVals: [],
@@ -207,5 +207,16 @@ export class Graph {
       retObj.yVals[retObj.yVals.length - 1] = fn(xmax);
     }
     return retObj;
+  }
+
+  /**
+   * Calculates the gradient of fn between f(x1) and f(x2)
+   * @param {Function} fn
+   * @param {Number} x1
+   * @param {Number} x2
+   * @returns {Number} gradient
+   */
+  static calcGradient(fn, x1, x2) {
+    return (fn(x2) - fn(x1)) / (x2 - x1);
   }
 }

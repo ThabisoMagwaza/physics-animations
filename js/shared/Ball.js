@@ -9,7 +9,7 @@ export function Ball(
   this.vy = opt.vy ?? 0;
 }
 
-Ball.prototype.drawOnCanvas = function (ctx) {
+Ball.prototype.draw = function (ctx) {
   ctx.fillStyle = this.color;
   ctx.beginPath();
   ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);

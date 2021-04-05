@@ -59,12 +59,22 @@ export class Vector2D {
   }
 
   /**
+   * Adds k*vec to the vector
+   * @param {Vector2D} vec
+   * @param {Number} k
+   */
+  addScaled(vec, k) {
+    return new Vector2D(this.x, this.y).incremenetBy(vec.scaleBy(k));
+  }
+
+  /**
    * Increments the vector by a given vector
    * @param {Vector2D} vec
    */
   incremenetBy(vec) {
     this.x += vec.x;
     this.y += vec.y;
+    return this;
   }
 
   /**
@@ -92,6 +102,7 @@ export class Vector2D {
   scaleBy(k) {
     this.x *= k;
     this.y *= k;
+    return this;
   }
 
   /**
