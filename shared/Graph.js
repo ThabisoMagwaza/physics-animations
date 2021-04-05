@@ -35,30 +35,22 @@ export class Graph {
     const yRange = this.ymax - this.ymin;
     const xdivs = xRange / xminor;
     const ydivs = yRange / yminor;
+
     // ticks in px
     this.xtick = this.width / xdivs;
     this.ytick = this.height / ydivs;
 
-    // for plotting
-    this.xUnitToPxMult = this.xtick / xminor;
-    this.yUnitToPxMult = this.ytick / yminor;
+    // scaling
+    this.xscale = this.width / xRange;
+    this.yscale = this.height / yRange;
 
     // find startX in on canvas
-    const xticksFromOrigin = this.xmin / xminor;
-    const xpixelsFromOrigin = Math.abs(xticksFromOrigin * this.xtick);
-    this.xStart =
-      xticksFromOrigin < 0
-        ? this.x0 - xpixelsFromOrigin
-        : this.x0 + xpixelsFromOrigin;
-    this.xEnd = this.xStart + xdivs * this.xtick; // in px
+    this.xStart = this.x0 + this.xmin * this.xscale;
+    this.xEnd = this.x0 + this.xmax * this.xscale; // in px
+
     // find startY on canvas
-    const yticksFromOrigin = this.ymin / yminor;
-    const ypixelsFromOrigin = Math.abs(yticksFromOrigin * this.ytick);
-    this.yStart =
-      yticksFromOrigin < 0
-        ? this.y0 + ypixelsFromOrigin
-        : this.y0 - ypixelsFromOrigin;
-    this.yEnd = this.yStart - ydivs * this.ytick; // in px
+    this.yStart = this.y0 - this.ymin * this.yscale;
+    this.yEnd = this.y0 - this.ymax * this.yscale;
 
     this.ctx.strokeStyle = "lightgray";
 
@@ -104,11 +96,11 @@ export class Graph {
 
     this.ctx.beginPath();
     for (let x = this.xStart; x <= this.xEnd; x += x_tick_major) {
-      this.ctx.fillText(curr_x, x + 2, this.y0 + 5);
+      this.ctx.fillText(Math.round(curr_x * 100) / 100, x + 2, this.y0 + 5);
       curr_x += xmajor;
     }
     for (let y = this.yStart; y >= this.yEnd; y -= y_tick_major) {
-      this.ctx.fillText(curr_y, this.x0 - 5, y - 5);
+      this.ctx.fillText(Math.round(curr_y * 100) / 100, this.x0 - 5, y - 5);
       curr_y += ymajor;
     }
     this.ctx.stroke();
@@ -179,8 +171,7 @@ export class Graph {
    * @returns {Number}
    */
   yValToPx(val) {
-    const pxFromOrigin = Math.abs(val * this.yUnitToPxMult);
-    return val < 0 ? this.y0 + pxFromOrigin : this.y0 - pxFromOrigin;
+    return this.y0 - val * this.yscale;
   }
 
   /**
@@ -189,8 +180,7 @@ export class Graph {
    * @returns {Number}
    */
   xValToPx(val) {
-    const pxFromOrigin = Math.abs(val * this.xUnitToPxMult);
-    return val < 0 ? this.x0 - pxFromOrigin : this.x0 + pxFromOrigin;
+    return val * this.xscale + this.x0;
   }
 
   /**

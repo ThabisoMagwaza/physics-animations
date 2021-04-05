@@ -209,22 +209,17 @@ var Graph = /*#__PURE__*/function () {
       var ydivs = yRange / yminor; // ticks in px
 
       this.xtick = this.width / xdivs;
-      this.ytick = this.height / ydivs; // for plotting
+      this.ytick = this.height / ydivs; // scaling
 
-      this.xUnitToPxMult = this.xtick / xminor;
-      this.yUnitToPxMult = this.ytick / yminor; // find startX in on canvas
+      this.xscale = this.width / xRange;
+      this.yscale = this.height / yRange; // find startX in on canvas
 
-      var xticksFromOrigin = this.xmin / xminor;
-      var xpixelsFromOrigin = Math.abs(xticksFromOrigin * this.xtick);
-      this.xStart = xticksFromOrigin < 0 ? this.x0 - xpixelsFromOrigin : this.x0 + xpixelsFromOrigin;
-      this.xEnd = this.xStart + xdivs * this.xtick; // in px
+      this.xStart = this.x0 + this.xmin * this.xscale;
+      this.xEnd = this.x0 + this.xmax * this.xscale; // in px
       // find startY on canvas
 
-      var yticksFromOrigin = this.ymin / yminor;
-      var ypixelsFromOrigin = Math.abs(yticksFromOrigin * this.ytick);
-      this.yStart = yticksFromOrigin < 0 ? this.y0 + ypixelsFromOrigin : this.y0 - ypixelsFromOrigin;
-      this.yEnd = this.yStart - ydivs * this.ytick; // in px
-
+      this.yStart = this.y0 - this.ymin * this.yscale;
+      this.yEnd = this.y0 - this.ymax * this.yscale;
       this.ctx.strokeStyle = "lightgray"; // draw minor divisions
 
       this.ctx.beginPath();
@@ -269,12 +264,12 @@ var Graph = /*#__PURE__*/function () {
       this.ctx.beginPath();
 
       for (var _x2 = this.xStart; _x2 <= this.xEnd; _x2 += x_tick_major) {
-        this.ctx.fillText(curr_x, _x2 + 2, this.y0 + 5);
+        this.ctx.fillText(Math.round(curr_x * 100) / 100, _x2 + 2, this.y0 + 5);
         curr_x += xmajor;
       }
 
       for (var _y2 = this.yStart; _y2 >= this.yEnd; _y2 -= y_tick_major) {
-        this.ctx.fillText(curr_y, this.x0 - 5, _y2 - 5);
+        this.ctx.fillText(Math.round(curr_y * 100) / 100, this.x0 - 5, _y2 - 5);
         curr_y += ymajor;
       }
 
@@ -361,8 +356,7 @@ var Graph = /*#__PURE__*/function () {
   }, {
     key: "yValToPx",
     value: function yValToPx(val) {
-      var pxFromOrigin = Math.abs(val * this.yUnitToPxMult);
-      return val < 0 ? this.y0 + pxFromOrigin : this.y0 - pxFromOrigin;
+      return this.y0 - val * this.yscale;
     }
     /**
      * Converst user x-val to px equivalent on graph
@@ -373,8 +367,7 @@ var Graph = /*#__PURE__*/function () {
   }, {
     key: "xValToPx",
     value: function xValToPx(val) {
-      var pxFromOrigin = Math.abs(val * this.xUnitToPxMult);
-      return val < 0 ? this.x0 - pxFromOrigin : this.x0 + pxFromOrigin;
+      return val * this.xscale + this.x0;
     }
     /**
      * Calculate x-y value for a given function
@@ -423,26 +416,44 @@ var _Graph = require("../../shared/Graph");
 
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
-var graph = new _Graph.Graph(context, -2.5, 2.5, -10, 10, canvas.width / 2, 250, 450, 350);
-graph.drawgrid(1, 0.1, 2, 0.4);
+var graph = new _Graph.Graph(context, -720, 720, -1, 1, canvas.width / 2, 250, 450, 350);
+graph.drawgrid(180, 36, 0.5, 0.1);
 graph.drawaxes();
 
 var fn = function fn(x) {
   return -0.5 * Math.pow(x, 5) + 3 * Math.pow(x, 3) + Math.pow(x, 2) - 2 * x - 3;
 };
 
-var _graph$createPoints = graph.createPoints(fn, -2.5, 2.5),
+var fn2 = function fn2(x) {
+  return Math.exp(-x * x);
+};
+
+var fnHill = function fnHill(x) {
+  return 0.1 * x * x * (x + 3.6) * (x + 2.5) * (x + 1) * (x - 0.5) * (x - 2) * (x - 3.5) * Math.exp(-x * x / 4);
+};
+
+var unitCircle = function unitCircle(x) {
+  return Math.sqrt(1 - Math.pow(x, 2));
+};
+
+var _graph$createPoints = graph.createPoints(function (x) {
+  return Math.tan(x * (Math.PI / 180));
+}, -720, 720),
     xVals = _graph$createPoints.xVals,
-    yVals = _graph$createPoints.yVals;
+    yVals = _graph$createPoints.yVals; // for (var i = 0; i <= 1000; i++) {
+//   var t = 0.01 * i;
+//   xVals[i] = Math.sin(2 * t);
+//   yVals[i] = Math.cos(2 * t);
+// }
+
 
 graph.plot(xVals, yVals);
 var ball = new _Ball.Ball({
   radius: 10
 });
 var interval;
-var n = 0;
-placeBall();
-animateBall();
+var n = 0; // placeBall();
+// animateBall();
 
 function animateBall() {
   interval = setupTimer();
@@ -460,7 +471,7 @@ function placeBall() {
 
 function moveBall() {
   context.clearRect(0, 0, canvas.width, canvas.height);
-  graph.drawgrid(1, 0.1, 2, 0.4);
+  graph.drawgrid(1, 0.2, 1, 0.2);
   graph.drawaxes();
   graph.plot(xVals, yVals);
   ball.x = graph.xValToPx(xVals[n]);
@@ -500,7 +511,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51712" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61521" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

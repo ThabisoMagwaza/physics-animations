@@ -6,29 +6,52 @@ const context = canvas.getContext("2d");
 
 const graph = new Graph(
   context,
-  -2.5,
-  2.5,
-  -10,
-  10,
+  -720,
+  720,
+  -1,
+  1,
   canvas.width / 2,
   250,
   450,
   350
 );
 
-graph.drawgrid(1, 0.1, 2, 0.4);
+graph.drawgrid(180, 36, 0.5, 0.1);
 graph.drawaxes();
 
 const fn = (x) => -0.5 * x ** 5 + 3 * x ** 3 + x ** 2 - 2 * x - 3;
+const fn2 = (x) => Math.exp(-x * x);
+const fnHill = (x) =>
+  0.1 *
+  x *
+  x *
+  (x + 3.6) *
+  (x + 2.5) *
+  (x + 1) *
+  (x - 0.5) *
+  (x - 2) *
+  (x - 3.5) *
+  Math.exp((-x * x) / 4);
 
-const { xVals, yVals } = graph.createPoints(fn, -2.5, 2.5);
+const unitCircle = (x) => Math.sqrt(1 - x ** 2);
+
+let { xVals, yVals } = graph.createPoints(
+  (x) => Math.tan(x * (Math.PI / 180)),
+  -720,
+  720
+);
+// for (var i = 0; i <= 1000; i++) {
+//   var t = 0.01 * i;
+//   xVals[i] = Math.sin(2 * t);
+//   yVals[i] = Math.cos(2 * t);
+// }
 graph.plot(xVals, yVals);
 
 const ball = new Ball({ radius: 10 });
 let interval;
 let n = 0;
-placeBall();
-animateBall();
+// placeBall();
+// animateBall();
 
 function animateBall() {
   interval = setupTimer();
@@ -47,7 +70,7 @@ function placeBall() {
 function moveBall() {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
-  graph.drawgrid(1, 0.1, 2, 0.4);
+  graph.drawgrid(1, 0.2, 1, 0.2);
   graph.drawaxes();
   graph.plot(xVals, yVals);
 
