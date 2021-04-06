@@ -260,9 +260,7 @@ var Vector2D = /*#__PURE__*/function () {
   }, {
     key: "scaleBy",
     value: function scaleBy(k) {
-      this.x *= k;
-      this.y *= k;
-      return this;
+      return new Vector2D(this.x * k, this.y * k);
     }
     /**
      * Calculates the dot product
@@ -1118,7 +1116,113 @@ function ProjectileTest(canvas, context) {
     cancelAnimationFrame(animId);
   }
 }
-},{"../shared/Ball2":"shared/Ball2.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Vector2D":"shared/Vector2D.js"}],"simulations/force-example.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = ForceExample;
+
+var _Ball = require("../shared/Ball2");
+
+var _Graph = require("../shared/Graph");
+
+var _Vector2D = require("../shared/Vector2D");
+
+function ForceExample(canvas, context, canvas_bg, context_bg) {
+  var ball, t, dt, animId, graphAcc, graphVelo, force, acc, t0;
+  var accArr = [],
+      velocityArr = [],
+      timeArr = [];
+  var g = 10;
+  var k = 0.5;
+  var animTime = 30;
+  window.onload = init;
+
+  function init() {
+    ball = new _Ball.Ball({
+      radius: 15,
+      color: "#0000",
+      gradient: true
+    });
+    ball.pos2D = new _Vector2D.Vector2D(75, 20);
+    ball.velo2D = new _Vector2D.Vector2D(0, 0);
+    ball.draw(context);
+    setupGraphs();
+    t0 = new Date().getTime();
+    t = 0;
+    animFrame();
+  }
+
+  function setupGraphs() {
+    graphAcc = new _Graph.Graph(context_bg, 0, 30, 0, 10, 150, 250, 600, 200);
+    graphAcc.drawgrid(5, 1, 5, 1);
+    graphAcc.drawaxes("times (s)", "acceleration (px/s^2)");
+    graphVelo = new _Graph.Graph(context_bg, 0, 30, 0, 25, 150, 550, 600, 200);
+    graphVelo.drawgrid(5, 1, 5, 1);
+    graphVelo.drawaxes("times (s)", "velocity (px/s)");
+  }
+
+  function animFrame() {
+    animId = requestAnimationFrame(animFrame, canvas);
+    onTimer();
+  }
+
+  function onTimer() {
+    var t1 = new Date().getTime();
+    dt = 0.001 * (t1 - t0);
+    if (dt > 0.2) dt = 0; // fix for when user switches tabs
+
+    t += dt;
+    t0 = t1;
+
+    if (t < animTime) {
+      move();
+    } else {
+      stop();
+    }
+
+    function stop() {
+      cancelAnimationFrame(animId);
+    }
+
+    function move() {
+      moveObject();
+      calcForce();
+      updateAcc();
+      updateVelo();
+      plotGraphs();
+    }
+
+    function moveObject() {
+      ball.pos2D = ball.pos2D.addScaled(ball.velo2D, dt);
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      ball.draw(context);
+    }
+
+    function calcForce() {
+      force = new _Vector2D.Vector2D(0, ball.mass * g - k * ball.vy);
+    }
+
+    function updateAcc() {
+      acc = force.scaleBy(1 / ball.mass);
+    }
+
+    function updateVelo() {
+      ball.velo2D = ball.velo2D.addScaled(acc, dt);
+    }
+
+    function plotGraphs() {
+      timeArr.push(t);
+      accArr.push(acc.y);
+      velocityArr.push(ball.vy);
+      graphAcc.plot(timeArr, accArr, "#ff0000");
+      graphVelo.plot(timeArr, velocityArr, "#ff0000");
+    }
+  }
+}
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Graph":"shared/Graph.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _ballParticle = _interopRequireDefault(require("./simulations/ball-particle"));
@@ -1131,16 +1235,20 @@ var _graph = _interopRequireDefault(require("./simulations/graph"));
 
 var _projectileTest = _interopRequireDefault(require("./simulations/projectile-test"));
 
+var _forceExample = _interopRequireDefault(require("./simulations/force-example"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var canvas = document.querySelector("canvas");
-var context = canvas.getContext("2d"); // ballParticles(canvas, context);
+var context = canvas.getContext("2d");
+var canvas_bg = document.querySelector(".canvas_bg");
+var context_bg = canvas_bg.getContext("2d");
+(0, _forceExample.default)(canvas, context, canvas_bg, context_bg); // ballParticles(canvas, context);
 // bouncingBall(canvas, context);
 // Calculus(canvas, context);
 // GraphFn(canvas, context);
-
-(0, _projectileTest.default)(canvas, context);
-},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+// ProjectileTest(canvas, context);
+},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

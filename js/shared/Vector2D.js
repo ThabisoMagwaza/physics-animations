@@ -100,9 +100,7 @@ export class Vector2D {
    * @param {Number} k
    */
   scaleBy(k) {
-    this.x *= k;
-    this.y *= k;
-    return this;
+    return new Vector2D(this.x * k, this.y * k);
   }
 
   /**
