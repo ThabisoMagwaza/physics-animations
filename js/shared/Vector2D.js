@@ -30,15 +30,15 @@ export class Vector2D {
 
   /**
    * Negates the direction of the vector in both x and y directions
+   * @returns {Vector2D} resultant vector
    */
   negate() {
-    this.x = -this.x;
-    this.y = -this.y;
+    return new Vector2D(-this.x, -this.y);
   }
 
   /**
    * Normalize the current vector
-   * @returns {Number} length of the vector
+   * @returns {Vector2D} resultant vector
    */
   normalize() {
     const length = this.length();
@@ -46,7 +46,7 @@ export class Vector2D {
       this.x /= length;
       this.y /= length;
     }
-    return length;
+    return this;
   }
 
   /**
@@ -64,17 +64,16 @@ export class Vector2D {
    * @param {Number} k
    */
   addScaled(vec, k) {
-    return this.clone().incremenetBy(vec.clone().scaleBy(k));
+    return this.incremenetBy(vec.scaleBy(k));
   }
 
   /**
    * Increments the vector by a given vector
    * @param {Vector2D} vec
+   * @returns {Vector2D} new Vector2D
    */
   incremenetBy(vec) {
-    this.x += vec.x;
-    this.y += vec.y;
-    return this;
+    return new Vector2D(this.x + vec.x, this.y + vec.y);
   }
 
   /**
@@ -89,15 +88,16 @@ export class Vector2D {
   /**
    * Decrement the vector by a given vector
    * @param {Vector2D} vec
+   * @returns {Vector2D} resultant vector
    */
   decrementBy(vec) {
-    this.x -= vec.x;
-    this.y -= vec.y;
+    return new Vector2D(this.x - vec.x, this.y - vec.y);
   }
 
   /**
    * Scales the vector by scalar k
    * @param {Number} k
+   * @returns {Vector2D} resultant vector
    */
   scaleBy(k) {
     return new Vector2D(this.x * k, this.y * k);

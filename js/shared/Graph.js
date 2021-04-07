@@ -21,6 +21,8 @@ export class Graph {
     this.y0 = y0;
     this.width = width;
     this.height = height;
+    this.xvals = [];
+    this.yvals = [];
   }
 
   /**
@@ -143,9 +145,12 @@ export class Graph {
     this.ctx.fillStyle = color;
     this.ctx.strokeStyle = color;
 
-    const xvalsPx = xvals.map((x) => this.xValToPx(x));
+    this.xvals = this.xvals.concat(xvals);
+    this.yvals = this.yvals.concat(yvals);
 
-    const yvalsPx = yvals.map((y) => this.yValToPx(y));
+    const xvalsPx = this.xvals.map((x) => this.xValToPx(x));
+
+    const yvalsPx = this.yvals.map((y) => this.yValToPx(y));
 
     if (dots) {
       for (let i = 0; i < xvalsPx.length; i++) {

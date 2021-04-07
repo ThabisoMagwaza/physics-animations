@@ -48,6 +48,8 @@ export default function bouncingBall(canvas, context) {
 
   function init() {
     env = new Environment();
+    env.width = canvas.width;
+    env.height = canvas.height;
     ballCANVAS = new Ball({
       color: "#ff0000",
       vy: -100,

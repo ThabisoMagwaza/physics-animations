@@ -4,9 +4,6 @@ import { Vector2D } from "../shared/Vector2D";
 
 export default function ForceExample(canvas, context, canvas_bg, context_bg) {
   let ball, t, dt, animId, graphAcc, graphVelo, force, acc, t0;
-  const accArr = [],
-    velocityArr = [],
-    timeArr = [];
   const g = 10;
   const k = 0.5;
   const animTime = 30;
@@ -83,11 +80,8 @@ export default function ForceExample(canvas, context, canvas_bg, context_bg) {
     }
 
     function plotGraphs() {
-      timeArr.push(t);
-      accArr.push(acc.y);
-      velocityArr.push(ball.vy);
-      graphAcc.plot(timeArr, accArr, "#ff0000");
-      graphVelo.plot(timeArr, velocityArr, "#ff0000");
+      graphAcc.plot([t], [acc.y], "#ff0000");
+      graphVelo.plot([t], [ball.vy], "#ff0000");
     }
   }
 }
