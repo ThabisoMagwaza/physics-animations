@@ -1419,7 +1419,143 @@ function EnergyExample(canvas, context, canvas_bg, context_bg) {
     cancelAnimationFrame(animId);
   }
 }
-},{"../shared/Ball2":"shared/Ball2.js","../shared/Vector2D":"shared/Vector2D.js","../shared/Graph":"shared/Graph.js"}],"index.js":[function(require,module,exports) {
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Vector2D":"shared/Vector2D.js","../shared/Graph":"shared/Graph.js"}],"simulations/floating-ball.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = FloatingBall;
+
+var _Ball = require("../shared/Ball2");
+
+var _Force = _interopRequireDefault(require("../shared/Force"));
+
+var _Vector2D = require("../shared/Vector2D");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function FloatingBall(canvas, context, canvas_bg, context_bg) {
+  var ball, t0, dt, animId, force, acc;
+  var g = 50,
+      k = 0.01,
+      rho = 1.5,
+      V = 1,
+      ylevel = 300,
+      vfac = -0.8;
+  window.onload = init;
+
+  function init() {
+    ball = new _Ball.Ball({
+      radius: 40,
+      color: "#0000ff",
+      gradient: true
+    });
+    ball.pos2D = new _Vector2D.Vector2D(50, 50);
+    ball.velo2D = new _Vector2D.Vector2D(40, -20);
+    ball.draw(context); // create water
+
+    context_bg.fillStyle = "rgba(0,255,255,0.5)";
+    context_bg.fillRect(0, ylevel, canvas.width, canvas.height); // set up event listeners
+
+    addEventListener("mousedown", onDown, false);
+    addEventListener("mouseup", onUp, false); // initialize time and animate
+
+    initAnim();
+  }
+
+  function onDown(e) {
+    var boundingRect = canvas.getBoundingClientRect();
+    ball.velo2D = new _Vector2D.Vector2D(0, 0);
+    ball.pos2D = new _Vector2D.Vector2D(e.clientX - boundingRect.left, e.clientY - boundingRect.top);
+    moveObjects();
+    stop();
+  }
+
+  function onUp(e) {
+    ball.velo2D = new _Vector2D.Vector2D(e.clientX - ball.x, e.clientY - ball.y);
+    initAnim();
+  }
+
+  function initAnim() {
+    t0 = Date.now();
+    animateFrame();
+  }
+
+  function animateFrame() {
+    animId = requestAnimationFrame(animateFrame, canvas);
+    onTimer();
+  }
+
+  function onTimer() {
+    var t1 = Date.now();
+    dt = 0.001 * (t1 - t0);
+    if (dt > 0.2) dt = 0;
+    t0 = t1;
+    move();
+  }
+
+  function move() {
+    moveObjects();
+    calcForce();
+    updateAccel();
+    updateVelo();
+  }
+
+  function stop() {
+    cancelAnimationFrame(animId);
+  }
+
+  function moveObjects() {
+    ball.pos2D = ball.pos2D.addScaled(ball.velo2D, dt);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    ball.draw(context);
+  }
+
+  function calcForce() {
+    var gravity = _Force.default.constantGravity(ball.mass, g);
+
+    var rball = ball.radius,
+        xball = ball.x,
+        yball = ball.y;
+    var dr = (yball - ylevel) / rball;
+    var ratio; // volume fractio of object that is submerged
+
+    if (dr <= -1) {
+      // object is completely out of water
+      ratio = 0;
+    } else if (dr < 1) {
+      // object is partially in the water
+      ratio = 0.5 + 0.25 * dr * (3 - Math.pow(dr, 2)); // for sphere
+    } else {
+      // object is completely submerged
+      ratio = 1;
+    }
+
+    var upthrust = new _Vector2D.Vector2D(0, -rho * V * ratio * g);
+    var drag = ball.velo2D.scaleBy(-ratio * k * ball.velo2D.length());
+    force = _Force.default.add([upthrust, gravity, drag]);
+
+    if (xball < rball) {
+      ball.xpos = rball;
+      ball.vx *= vfac;
+    }
+
+    if (xball > canvas.width - rball) {
+      ball.xpos = canvas.width - rball;
+      ball.vx *= vfac;
+    }
+  }
+
+  function updateAccel() {
+    acc = force.scaleBy(1 / ball.mass);
+  }
+
+  function updateVelo() {
+    ball.velo2D = ball.velo2D.addScaled(acc, dt);
+  }
+}
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _ballParticle = _interopRequireDefault(require("./simulations/ball-particle"));
@@ -1436,19 +1572,22 @@ var _forceExample = _interopRequireDefault(require("./simulations/force-example"
 
 var _energyExample = _interopRequireDefault(require("./simulations/energy-example"));
 
+var _floatingBall = _interopRequireDefault(require("./simulations/floating-ball"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
 var canvas_bg = document.querySelector(".canvas_bg");
 var context_bg = canvas_bg.getContext("2d");
-(0, _forceExample.default)(canvas, context, canvas_bg, context_bg); // EnergyExample(canvas, context, canvas_bg, context_bg);
+(0, _floatingBall.default)(canvas, context, canvas_bg, context_bg); // ForceExample(canvas, context, canvas_bg, context_bg);
+// EnergyExample(canvas, context, canvas_bg, context_bg);
 // ballParticles(canvas, context);
 // bouncingBall(canvas, context);
 // Calculus(canvas, context);
 // GraphFn(canvas, context);
 // ProjectileTest(canvas, context);
-},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
