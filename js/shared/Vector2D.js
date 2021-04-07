@@ -64,7 +64,7 @@ export class Vector2D {
    * @param {Number} k
    */
   addScaled(vec, k) {
-    return this.incremenetBy(vec.scaleBy(k));
+    return this.incrementBy(vec.scaleBy(k));
   }
 
   /**
@@ -72,7 +72,7 @@ export class Vector2D {
    * @param {Vector2D} vec
    * @returns {Vector2D} new Vector2D
    */
-  incremenetBy(vec) {
+  incrementBy(vec) {
     return new Vector2D(this.x + vec.x, this.y + vec.y);
   }
 

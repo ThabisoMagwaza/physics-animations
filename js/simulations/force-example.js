@@ -1,4 +1,5 @@
 import { Ball } from "../shared/Ball2";
+import Force from "../shared/Force";
 import { Graph } from "../shared/Graph";
 import { Vector2D } from "../shared/Vector2D";
 
@@ -68,7 +69,12 @@ export default function ForceExample(canvas, context, canvas_bg, context_bg) {
     }
 
     function calcForce() {
-      force = new Vector2D(0, ball.mass * g - k * ball.vy);
+      // force = new Vector2D(0, ball.mass * g - k * ball.vy);
+      debugger;
+      force = Force.add([
+        Force.constantGravity(ball.mass, g),
+        Force.linearDrag(k, ball.velo2D),
+      ]);
     }
 
     function updateAcc() {

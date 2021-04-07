@@ -11,8 +11,8 @@ const context = canvas.getContext("2d");
 const canvas_bg = document.querySelector(".canvas_bg");
 const context_bg = canvas_bg.getContext("2d");
 
-// ForceExample(canvas, context, canvas_bg, context_bg);
-EnergyExample(canvas, context, canvas_bg, context_bg);
+ForceExample(canvas, context, canvas_bg, context_bg);
+// EnergyExample(canvas, context, canvas_bg, context_bg);
 // ballParticles(canvas, context);
 // bouncingBall(canvas, context);
 // Calculus(canvas, context);

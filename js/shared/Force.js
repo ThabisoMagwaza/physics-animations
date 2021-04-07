@@ -27,7 +27,7 @@ export default class Force {
   static linearDrag(k, vel) {
     let force;
     const velMag = vel.length();
-    velMag > 0 ? (force = vel.scaleBy(-k)) : new Vector2D(0, 0);
+    velMag > 0 ? (force = vel.scaleBy(-k)) : (force = new Vector2D(0, 0));
 
     return force;
   }
@@ -39,7 +39,7 @@ export default class Force {
    */
   static add(forces) {
     return forces.reduce(
-      (force, resultant) => resultant.incremenBy(force),
+      (force, resultant) => resultant.incrementBy(force),
       new Vector2D(0, 0)
     );
   }

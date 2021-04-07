@@ -171,17 +171,17 @@ var Vector2D = /*#__PURE__*/function () {
     }
     /**
      * Negates the direction of the vector in both x and y directions
+     * @returns {Vector2D} resultant vector
      */
 
   }, {
     key: "negate",
     value: function negate() {
-      this.x = -this.x;
-      this.y = -this.y;
+      return new Vector2D(-this.x, -this.y);
     }
     /**
      * Normalize the current vector
-     * @returns {Number} length of the vector
+     * @returns {Vector2D} resultant vector
      */
 
   }, {
@@ -194,7 +194,7 @@ var Vector2D = /*#__PURE__*/function () {
         this.y /= length;
       }
 
-      return length;
+      return this;
     }
     /**
      * Sums two vectors
@@ -216,19 +216,18 @@ var Vector2D = /*#__PURE__*/function () {
   }, {
     key: "addScaled",
     value: function addScaled(vec, k) {
-      return this.clone().incremenetBy(vec.clone().scaleBy(k));
+      return this.incrementBy(vec.scaleBy(k));
     }
     /**
      * Increments the vector by a given vector
      * @param {Vector2D} vec
+     * @returns {Vector2D} new Vector2D
      */
 
   }, {
-    key: "incremenetBy",
-    value: function incremenetBy(vec) {
-      this.x += vec.x;
-      this.y += vec.y;
-      return this;
+    key: "incrementBy",
+    value: function incrementBy(vec) {
+      return new Vector2D(this.x + vec.x, this.y + vec.y);
     }
     /**
      * Subtracts the given vector from this vector
@@ -244,17 +243,18 @@ var Vector2D = /*#__PURE__*/function () {
     /**
      * Decrement the vector by a given vector
      * @param {Vector2D} vec
+     * @returns {Vector2D} resultant vector
      */
 
   }, {
     key: "decrementBy",
     value: function decrementBy(vec) {
-      this.x -= vec.x;
-      this.y -= vec.y;
+      return new Vector2D(this.x - vec.x, this.y - vec.y);
     }
     /**
      * Scales the vector by scalar k
      * @param {Number} k
+     * @returns {Vector2D} resultant vector
      */
 
   }, {
@@ -1122,7 +1122,83 @@ function ProjectileTest(canvas, context) {
     cancelAnimationFrame(animId);
   }
 }
-},{"../shared/Ball2":"shared/Ball2.js","../shared/Vector2D":"shared/Vector2D.js"}],"simulations/force-example.js":[function(require,module,exports) {
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Vector2D":"shared/Vector2D.js"}],"shared/Force.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _Vector2D = require("./Vector2D");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Force = /*#__PURE__*/function () {
+  function Force() {
+    _classCallCheck(this, Force);
+  }
+  /**
+   *
+   * @returns {Vector2D} zero 2D force
+   */
+
+
+  _createClass(Force, null, [{
+    key: "zeroForce",
+    value: function zeroForce() {
+      return new _Vector2D.Vector2D(0, 0);
+    }
+    /**
+     *
+     * @param {Number} m mass
+     * @param {Number} g gravitational force
+     * @returns {Vector2D} downwards pointing gravitational vector
+     */
+
+  }, {
+    key: "constantGravity",
+    value: function constantGravity(m, g) {
+      return new _Vector2D.Vector2D(0, m * g);
+    }
+    /**
+     *
+     * @param {Number} k drag coefficeint
+     * @param {Vector2D} vel velocity
+     */
+
+  }, {
+    key: "linearDrag",
+    value: function linearDrag(k, vel) {
+      var force;
+      var velMag = vel.length();
+      velMag > 0 ? force = vel.scaleBy(-k) : force = new _Vector2D.Vector2D(0, 0);
+      return force;
+    }
+    /**
+     * Sums forces
+     * @param {Array} forces array of forces
+     * @returns {Vector2D} resultant vector
+     */
+
+  }, {
+    key: "add",
+    value: function add(forces) {
+      return forces.reduce(function (force, resultant) {
+        return resultant.incrementBy(force);
+      }, new _Vector2D.Vector2D(0, 0));
+    }
+  }]);
+
+  return Force;
+}();
+
+exports.default = Force;
+},{"./Vector2D":"shared/Vector2D.js"}],"simulations/force-example.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1132,9 +1208,13 @@ exports.default = ForceExample;
 
 var _Ball = require("../shared/Ball2");
 
+var _Force = _interopRequireDefault(require("../shared/Force"));
+
 var _Graph = require("../shared/Graph");
 
 var _Vector2D = require("../shared/Vector2D");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function ForceExample(canvas, context, canvas_bg, context_bg) {
   var ball, t, dt, animId, graphAcc, graphVelo, force, acc, t0;
@@ -1205,7 +1285,9 @@ function ForceExample(canvas, context, canvas_bg, context_bg) {
     }
 
     function calcForce() {
-      force = new _Vector2D.Vector2D(0, ball.mass * g - k * ball.vy);
+      // force = new Vector2D(0, ball.mass * g - k * ball.vy);
+      debugger;
+      force = _Force.default.add([_Force.default.constantGravity(ball.mass, g), _Force.default.linearDrag(k, ball.velo2D)]);
     }
 
     function updateAcc() {
@@ -1222,7 +1304,7 @@ function ForceExample(canvas, context, canvas_bg, context_bg) {
     }
   }
 }
-},{"../shared/Ball2":"shared/Ball2.js","../shared/Graph":"shared/Graph.js","../shared/Vector2D":"shared/Vector2D.js"}],"simulations/energy-example.js":[function(require,module,exports) {
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Graph":"shared/Graph.js","../shared/Vector2D":"shared/Vector2D.js"}],"simulations/energy-example.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1359,9 +1441,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
 var canvas_bg = document.querySelector(".canvas_bg");
-var context_bg = canvas_bg.getContext("2d"); // ForceExample(canvas, context, canvas_bg, context_bg);
-
-(0, _energyExample.default)(canvas, context, canvas_bg, context_bg); // ballParticles(canvas, context);
+var context_bg = canvas_bg.getContext("2d");
+(0, _forceExample.default)(canvas, context, canvas_bg, context_bg); // EnergyExample(canvas, context, canvas_bg, context_bg);
+// ballParticles(canvas, context);
 // bouncingBall(canvas, context);
 // Calculus(canvas, context);
 // GraphFn(canvas, context);
@@ -1394,7 +1476,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65101" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65133" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
