@@ -1660,7 +1660,84 @@ function ProjectileEnergy(canvas, context, canvas_bg, context_bg) {
     cancelAnimationFrame(animId);
   }
 }
-},{"../shared/Ball2":"shared/Ball2.js","../shared/Graph":"shared/Graph.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Graph":"shared/Graph.js","../shared/Vector2D":"shared/Vector2D.js"}],"simulations/collision-test.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = CollisionTest;
+
+var _Ball = require("../shared/Ball2");
+
+var _Vector2D = require("../shared/Vector2D");
+
+function CollisionTest(canvas, context) {
+  var t0, dt, animId;
+  var radius = 15; // ball radius
+
+  var balls = [];
+  window.onload = init;
+
+  function init() {
+    makeBalls();
+    t0 = Date.now();
+    animFrame();
+  }
+
+  function makeBalls() {
+    setupBall("#0000ff", new _Vector2D.Vector2D(50, 200), new _Vector2D.Vector2D(30, 0));
+    setupBall("#ff0000", new _Vector2D.Vector2D(500, 200), new _Vector2D.Vector2D(-20, 0));
+    setupBall("#00ff00", new _Vector2D.Vector2D(300, 200), new _Vector2D.Vector2D(10, 0));
+  }
+
+  function setupBall(color, position, velocity) {
+    var ball = new _Ball.Ball({
+      radius: radius,
+      color: color,
+      gradient: true
+    });
+    ball.pos2D = position;
+    ball.velo2D = velocity;
+    ball.draw(context);
+    balls.push(ball);
+  }
+
+  function animFrame() {
+    animId = requestAnimationFrame(animFrame, canvas);
+    onTimer();
+  }
+
+  function onTimer() {
+    var t1 = Date.now();
+    dt = 0.001 * (t1 - t0);
+    if (dt > 0.2) dt = 0;
+    t0 = t1;
+    checkCollision();
+    move();
+  }
+
+  function move() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    balls.forEach(function (ball) {
+      ball.pos2D = ball.pos2D.addScaled(ball.velo2D, dt);
+      ball.draw(context);
+    });
+  }
+
+  function checkCollision() {
+    balls.forEach(function (ball1, i) {
+      var ball2 = balls[(i + 1) % balls.length]; //   if (!ball2) return;
+
+      if (_Vector2D.Vector2D.distance(ball1.pos2D, ball2.pos2D) <= ball1.radius + ball2.radius) {
+        var tmp = ball1.velo2D;
+        ball1.velo2D = ball2.velo2D;
+        ball2.velo2D = tmp;
+      }
+    });
+  }
+}
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _ballParticle = _interopRequireDefault(require("./simulations/ball-particle"));
@@ -1681,13 +1758,16 @@ var _floatingBall = _interopRequireDefault(require("./simulations/floating-ball"
 
 var _projectileEnergy = _interopRequireDefault(require("./simulations/projectile-energy"));
 
+var _collisionTest = _interopRequireDefault(require("./simulations/collision-test"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
 var canvas_bg = document.querySelector(".canvas_bg");
 var context_bg = canvas_bg.getContext("2d");
-(0, _projectileEnergy.default)(canvas, context, canvas_bg, context_bg); // FloatingBall(canvas, context, canvas_bg, context_bg);
+(0, _collisionTest.default)(canvas, context); // ProjectileEnergy(canvas, context, canvas_bg, context_bg);
+// FloatingBall(canvas, context, canvas_bg, context_bg);
 // ForceExample(canvas, context, canvas_bg, context_bg);
 // EnergyExample(canvas, context, canvas_bg, context_bg);
 // ballParticles(canvas, context);
@@ -1695,7 +1775,7 @@ var context_bg = canvas_bg.getContext("2d");
 // Calculus(canvas, context);
 // GraphFn(canvas, context);
 // ProjectileTest(canvas, context);
-},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
