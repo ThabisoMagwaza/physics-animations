@@ -171,6 +171,14 @@ export class Graph {
   }
 
   /**
+   * clear stored xvals and yvals
+   */
+  clear() {
+    this.xvals = [];
+    this.yvals = [];
+  }
+
+  /**
    * Converts user y-val to px equivalent on graph
    * @param {Number} val
    * @returns {Number}

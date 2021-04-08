@@ -851,6 +851,16 @@ var Graph = /*#__PURE__*/function () {
       }
     }
     /**
+     * clear stored xvals and yvals
+     */
+
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.xvals = [];
+      this.yvals = [];
+    }
+    /**
      * Converts user y-val to px equivalent on graph
      * @param {Number} val
      * @returns {Number}
@@ -1555,7 +1565,102 @@ function FloatingBall(canvas, context, canvas_bg, context_bg) {
     ball.velo2D = ball.velo2D.addScaled(acc, dt);
   }
 }
-},{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Vector2D":"shared/Vector2D.js"}],"simulations/projectile-energy.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = ProjectileEnergy;
+
+var _Ball = require("../shared/Ball2");
+
+var _Graph = require("../shared/Graph");
+
+var _Vector2D = require("../shared/Vector2D");
+
+function ProjectileEnergy(canvas, context, canvas_bg, context_bg) {
+  var ball, animId, graph;
+  var m = 1,
+      g = 10,
+      u = 50,
+      groundLevel = 350;
+  var n = 0,
+      tA = [],
+      hA = [],
+      peA = [],
+      keA = [],
+      teA = [];
+  window.onload = init;
+
+  function init() {
+    ball = new _Ball.Ball({
+      radius: 15,
+      color: "#000000",
+      gradient: true,
+      mass: m
+    });
+    ball.pos2D = new _Vector2D.Vector2D(750, groundLevel);
+    ball.draw(context);
+    setupGraph();
+    setupArray();
+    animFrame();
+  }
+
+  function setupGraph() {
+    graph = new _Graph.Graph(context_bg, 0, 10, 0, 1500, 200, 350, 450, 300);
+    graph.drawgrid(1, 0.5, 500, 100);
+    graph.drawaxes("t", "p.e,k.e,total");
+  }
+
+  function setupArray() {
+    var t, v;
+
+    for (var i = 0; i <= 100; i++) {
+      tA[i] = i * 0.1;
+      t = tA[i];
+      v = u - g * t;
+      hA[i] = u * t - 0.5 * g * Math.pow(t, 2);
+      peA[i] = m * g * hA[i];
+      keA[i] = 0.5 * Math.pow(v, 2);
+      teA[i] = peA[i] + keA[i];
+    }
+  }
+
+  function animFrame() {
+    setTimeout(function () {
+      animId = requestAnimationFrame(animFrame, canvas);
+      animate();
+    }, 1000 / 10);
+  }
+
+  function animate() {
+    moveObjects();
+    plotGraphs();
+    n++;
+    if (n === hA.length) stop();
+  }
+
+  function moveObjects() {
+    ball.y = groundLevel - hA[n];
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    ball.draw(context);
+  }
+
+  function plotGraphs() {
+    graph.plot([tA[n]], [peA[n]], "#ff0000", true, false);
+    graph.clear();
+    graph.plot([tA[n]], [keA[n]], "#0000ff", true, false);
+    graph.clear();
+    graph.plot([tA[n]], [teA[n]], "#000000", true, false);
+    graph.clear();
+  }
+
+  function stop() {
+    cancelAnimationFrame(animId);
+  }
+}
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Graph":"shared/Graph.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _ballParticle = _interopRequireDefault(require("./simulations/ball-particle"));
@@ -1574,20 +1679,23 @@ var _energyExample = _interopRequireDefault(require("./simulations/energy-exampl
 
 var _floatingBall = _interopRequireDefault(require("./simulations/floating-ball"));
 
+var _projectileEnergy = _interopRequireDefault(require("./simulations/projectile-energy"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
 var canvas_bg = document.querySelector(".canvas_bg");
 var context_bg = canvas_bg.getContext("2d");
-(0, _floatingBall.default)(canvas, context, canvas_bg, context_bg); // ForceExample(canvas, context, canvas_bg, context_bg);
+(0, _projectileEnergy.default)(canvas, context, canvas_bg, context_bg); // FloatingBall(canvas, context, canvas_bg, context_bg);
+// ForceExample(canvas, context, canvas_bg, context_bg);
 // EnergyExample(canvas, context, canvas_bg, context_bg);
 // ballParticles(canvas, context);
 // bouncingBall(canvas, context);
 // Calculus(canvas, context);
 // GraphFn(canvas, context);
 // ProjectileTest(canvas, context);
-},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1615,7 +1723,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65133" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52267" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
