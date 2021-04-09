@@ -1202,6 +1202,20 @@ var Force = /*#__PURE__*/function () {
         return resultant.incrementBy(force);
       }, new _Vector2D.Vector2D(0, 0));
     }
+    /**
+     *
+     * @param {Number} G Newtown's gravitational constant
+     * @param {Number} m1 mass of object1
+     * @param {Number} m2 mass of object2
+     * @param {Number} r distance vector from object1 to object 2
+     * @returns {Vector2D} gravitational force experieced by object1 due to object2
+     */
+
+  }, {
+    key: "gravity",
+    value: function gravity(G, m1, m2, r) {
+      return r.length() == 0 ? new _Vector2D.Vector2D(0, 0) : r.scaleBy(-G * m1 * m2 / Math.pow(r.length(), 3));
+    }
   }]);
 
   return Force;
@@ -1737,7 +1751,117 @@ function CollisionTest(canvas, context) {
     });
   }
 }
-},{"../shared/Ball2":"shared/Ball2.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Vector2D":"shared/Vector2D.js"}],"simulations/obits.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = Orbits;
+
+var _Ball = require("../shared/Ball2");
+
+var _Force = _interopRequireDefault(require("../shared/Force"));
+
+var _Vector2D = require("../shared/Vector2D");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function Orbits(canvas, context, canvas_bg, context_bg) {
+  var planet, sun;
+  var m = 1; // mass of planet
+
+  var M = 1000000; // mass of sun
+
+  var G = 1;
+  var numStars = 100;
+  var t0, dt, animId, force, acc;
+  window.onload = init;
+
+  function init() {
+    drawStars(); // create stationary sun
+
+    sun = new _Ball.Ball({
+      radius: 70,
+      color: "#ff9900",
+      mass: M,
+      gradient: true
+    });
+    sun.pos2D = new _Vector2D.Vector2D(canvas_bg.width / 2, canvas_bg.height / 2);
+    sun.draw(context_bg); // create a moving planet
+
+    planet = new _Ball.Ball({
+      radius: 10,
+      color: "#0000ff",
+      gradient: true,
+      mass: m
+    });
+    context.fillStyle = "#000";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    planet.pos2D = new _Vector2D.Vector2D(200, 150);
+    planet.velo2D = new _Vector2D.Vector2D(50, -30);
+    planet.draw(context); // make planet orbit
+
+    t0 = Date.now();
+    animateFrame();
+  }
+
+  function drawStars() {
+    // context_bg.fillStyle = "#000000";
+    // context_bg.fillRect(0, 0, canvas_bg.width, canvas_bg.height);
+    //   create 100 randomly positioned starts
+    for (var i = 0; i <= numStars; i++) {
+      var star = new _Ball.Ball({
+        radius: Math.random() * 2,
+        color: "#ffff00"
+      });
+      star.pos2D = new _Vector2D.Vector2D(Math.random() * canvas_bg.width, Math.random() * canvas_bg.height);
+      star.draw(context_bg);
+    }
+  }
+
+  function animateFrame() {
+    animId = requestAnimationFrame(animateFrame, canvas);
+    onTimer();
+  }
+
+  function onTimer() {
+    var t1 = Date.now();
+    dt = 0.001 * (t1 - t0);
+    if (dt > 0.2) dt = 0;
+    t0 = t1;
+    move();
+  }
+
+  function move() {
+    moveObject(planet);
+    calcForces();
+    updateAccel();
+    updateVelo(planet);
+  }
+
+  function moveObject(obj) {
+    obj.pos2D = obj.pos2D.addScaled(obj.velo2D, dt);
+    debugger;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#000";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    obj.draw(context);
+  }
+
+  function calcForces() {
+    force = _Force.default.gravity(G, m, M, planet.pos2D.subtract(sun.pos2D));
+  }
+
+  function updateAccel() {
+    acc = force.scaleBy(1 / m);
+  }
+
+  function updateVelo(obj) {
+    obj.velo2D = obj.velo2D.addScaled(acc, dt);
+  }
+}
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _ballParticle = _interopRequireDefault(require("./simulations/ball-particle"));
@@ -1760,13 +1884,16 @@ var _projectileEnergy = _interopRequireDefault(require("./simulations/projectile
 
 var _collisionTest = _interopRequireDefault(require("./simulations/collision-test"));
 
+var _obits = _interopRequireDefault(require("./simulations/obits"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
 var canvas_bg = document.querySelector(".canvas_bg");
-var context_bg = canvas_bg.getContext("2d");
-(0, _collisionTest.default)(canvas, context); // ProjectileEnergy(canvas, context, canvas_bg, context_bg);
+var context_bg = canvas_bg.getContext("2d"); // CollisionTest(canvas, context);
+
+(0, _obits.default)(canvas, context, canvas_bg, context_bg); // ProjectileEnergy(canvas, context, canvas_bg, context_bg);
 // FloatingBall(canvas, context, canvas_bg, context_bg);
 // ForceExample(canvas, context, canvas_bg, context_bg);
 // EnergyExample(canvas, context, canvas_bg, context_bg);
@@ -1775,7 +1902,7 @@ var context_bg = canvas_bg.getContext("2d");
 // Calculus(canvas, context);
 // GraphFn(canvas, context);
 // ProjectileTest(canvas, context);
-},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js","./simulations/obits":"simulations/obits.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1803,7 +1930,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52267" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58685" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

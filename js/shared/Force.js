@@ -43,4 +43,18 @@ export default class Force {
       new Vector2D(0, 0)
     );
   }
+
+  /**
+   *
+   * @param {Number} G Newtown's gravitational constant
+   * @param {Number} m1 mass of object1
+   * @param {Number} m2 mass of object2
+   * @param {Number} r distance vector from object1 to object 2
+   * @returns {Vector2D} gravitational force experieced by object1 due to object2
+   */
+  static gravity(G, m1, m2, r) {
+    return r.length() == 0
+      ? new Vector2D(0, 0)
+      : r.scaleBy((-G * m1 * m2) / r.length() ** 3);
+  }
 }
