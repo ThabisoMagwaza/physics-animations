@@ -1787,7 +1787,7 @@ function Orbits(canvas, context, canvas_bg, context_bg) {
       mass: M,
       gradient: true
     });
-    sun.pos2D = new _Vector2D.Vector2D(canvas_bg.width / 2, canvas_bg.height / 2);
+    sun.pos2D = new _Vector2D.Vector2D(450, canvas_bg.height / 2);
     sun.draw(context_bg); // create a moving planet
 
     planet = new _Ball.Ball({
@@ -1798,8 +1798,8 @@ function Orbits(canvas, context, canvas_bg, context_bg) {
     });
     context.fillStyle = "#000";
     context.fillRect(0, 0, canvas.width, canvas.height);
-    planet.pos2D = new _Vector2D.Vector2D(200, 150);
-    planet.velo2D = new _Vector2D.Vector2D(50, -30);
+    planet.pos2D = new _Vector2D.Vector2D(350, canvas_bg.height / 2);
+    planet.velo2D = new _Vector2D.Vector2D(0, -120);
     planet.draw(context); // make planet orbit
 
     t0 = Date.now();
@@ -1861,6 +1861,147 @@ function Orbits(canvas, context, canvas_bg, context_bg) {
     obj.velo2D = obj.velo2D.addScaled(acc, dt);
   }
 }
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Vector2D":"shared/Vector2D.js"}],"simulations/two-masses.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = TwoMasses;
+
+var _Ball = require("../shared/Ball2");
+
+var _Force = _interopRequireDefault(require("../shared/Force"));
+
+var _Vector2D = require("../shared/Vector2D");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ *
+ * @param {HTMLCanvasElement} canvas
+ * @param {CanvasRenderingContext2D} context
+ * @param {HTMLCanvasElement} canvas_bg
+ * @param {CanvasRenderingContext2D} context_bg
+ */
+function TwoMasses(canvas, context, canvas_bg, context_bg) {
+  var ball1, ball2;
+  var r1 = 10,
+      r2 = 40,
+      m1 = 10,
+      m2 = 60;
+  var G = 100000;
+  var t0, dt;
+  var force, acc;
+  window.onload = init;
+
+  function init() {
+    var ball1Opt = {
+      radius: r1,
+      color: "#0000ff",
+      mass: m1,
+      gradient: true
+    };
+    var ball2Opt = {
+      radius: r2,
+      color: "#ff0000",
+      mass: m2,
+      gradient: true
+    };
+    debugger;
+    var ball1Init = new _Ball.Ball(ball1Opt);
+    ball1Init.pos2D = new _Vector2D.Vector2D(150, 200);
+    ball1Init.draw(context_bg);
+    var ball2Init = new _Ball.Ball(ball2Opt);
+    ball2Init.pos2D = new _Vector2D.Vector2D(350, 200);
+    ball2Init.draw(context_bg);
+    ball1Opt.color = "#9999ff";
+    ball1 = new _Ball.Ball(ball1Opt);
+    ball1.pos2D = new _Vector2D.Vector2D(150, 200);
+    ball1.velo2D = new _Vector2D.Vector2D(0, 150);
+    ball1.draw(context);
+    ball2Opt.color = "#ff9999";
+    ball2 = new _Ball.Ball(ball2Opt);
+    ball2.pos2D = ball2Init.pos2D;
+    ball2.velo2D = new _Vector2D.Vector2D(0, -2.5);
+    ball2.draw(context);
+    t0 = Date.now();
+    animateFrame();
+  }
+
+  function animateFrame() {
+    requestAnimationFrame(animateFrame, canvas);
+    onTimer();
+  }
+
+  function onTimer() {
+    var t1 = Date.now();
+    dt = 0.001 * (t1 - t0);
+    if (dt > 0.2) dt = 0;
+    t0 = t1;
+    move();
+  }
+
+  function move() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    moveObject(ball1);
+    moveObject(ball2);
+    calcForce(ball1, ball2); // force on ball1 due to ball2
+
+    update(ball1);
+    calcForce(ball2, ball1); // force on ball2 due to ball1
+
+    update(ball2);
+  }
+  /**
+   *
+   * @param {Ball} obj
+   */
+
+
+  function moveObject(obj) {
+    obj.pos2D = obj.pos2D.addScaled(obj.velo2D, dt);
+    obj.draw(context);
+  }
+  /**
+   * Calc gravitational force on obj2 due to obj1
+   * @param {Ball} obj1
+   * @param {Ball} obj2
+   */
+
+
+  function calcForce(obj1, obj2) {
+    force = _Force.default.gravity(G, obj1.mass, obj2.mass, obj1.pos2D.subtract(obj2.pos2D));
+  }
+  /**
+   *
+   * @param {Ball} obj
+   */
+
+
+  function update(obj) {
+    updateAccel(obj);
+    updateVelo(obj);
+  }
+  /**
+   *
+   * @param {Ball} obj
+   */
+
+
+  function updateAccel(obj) {
+    acc = force.scaleBy(1 / obj.mass);
+  }
+  /**
+   *
+   * @param {Ball} obj
+   */
+
+
+  function updateVelo(obj) {
+    obj.velo2D = obj.velo2D.addScaled(acc, dt);
+  }
+}
 },{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
@@ -1886,6 +2027,8 @@ var _collisionTest = _interopRequireDefault(require("./simulations/collision-tes
 
 var _obits = _interopRequireDefault(require("./simulations/obits"));
 
+var _twoMasses = _interopRequireDefault(require("./simulations/two-masses"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var canvas = document.querySelector("canvas");
@@ -1893,7 +2036,8 @@ var context = canvas.getContext("2d");
 var canvas_bg = document.querySelector(".canvas_bg");
 var context_bg = canvas_bg.getContext("2d"); // CollisionTest(canvas, context);
 
-(0, _obits.default)(canvas, context, canvas_bg, context_bg); // ProjectileEnergy(canvas, context, canvas_bg, context_bg);
+(0, _twoMasses.default)(canvas, context, canvas_bg, context_bg); // Orbits(canvas, context, canvas_bg, context_bg);
+// ProjectileEnergy(canvas, context, canvas_bg, context_bg);
 // FloatingBall(canvas, context, canvas_bg, context_bg);
 // ForceExample(canvas, context, canvas_bg, context_bg);
 // EnergyExample(canvas, context, canvas_bg, context_bg);
@@ -1902,7 +2046,7 @@ var context_bg = canvas_bg.getContext("2d"); // CollisionTest(canvas, context);
 // Calculus(canvas, context);
 // GraphFn(canvas, context);
 // ProjectileTest(canvas, context);
-},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js","./simulations/obits":"simulations/obits.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js","./simulations/obits":"simulations/obits.js","./simulations/two-masses":"simulations/two-masses.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1930,7 +2074,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58685" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49203" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -16,7 +16,7 @@ export default function Orbits(canvas, context, canvas_bg, context_bg) {
     drawStars();
     // create stationary sun
     sun = new Ball({ radius: 70, color: "#ff9900", mass: M, gradient: true });
-    sun.pos2D = new Vector2D(canvas_bg.width / 2, canvas_bg.height / 2);
+    sun.pos2D = new Vector2D(450, canvas_bg.height / 2);
     sun.draw(context_bg);
 
     // create a moving planet
@@ -30,8 +30,8 @@ export default function Orbits(canvas, context, canvas_bg, context_bg) {
     context.fillStyle = "#000";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    planet.pos2D = new Vector2D(200, 150);
-    planet.velo2D = new Vector2D(50, -30);
+    planet.pos2D = new Vector2D(350, canvas_bg.height / 2);
+    planet.velo2D = new Vector2D(0, -120);
     planet.draw(context);
 
     // make planet orbit
