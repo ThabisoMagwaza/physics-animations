@@ -10,6 +10,7 @@ import ProjectileEnergy from "./simulations/projectile-energy";
 import CollisionTest from "./simulations/collision-test";
 import Orbits from "./simulations/obits";
 import TwoMasses from "./simulations/two-masses";
+import RocketTest from "./simulations/rocket-test";
 
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
@@ -17,7 +18,8 @@ const canvas_bg = document.querySelector(".canvas_bg");
 const context_bg = canvas_bg.getContext("2d");
 
 // CollisionTest(canvas, context);
-TwoMasses(canvas, context, canvas_bg, context_bg);
+RocketTest(canvas, context, canvas_bg, context_bg);
+// TwoMasses(canvas, context, canvas_bg, context_bg);
 // Orbits(canvas, context, canvas_bg, context_bg);
 // ProjectileEnergy(canvas, context, canvas_bg, context_bg);
 // FloatingBall(canvas, context, canvas_bg, context_bg);

@@ -2002,7 +2002,339 @@ function TwoMasses(canvas, context, canvas_bg, context_bg) {
     obj.velo2D = obj.velo2D.addScaled(acc, dt);
   }
 }
-},{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Vector2D":"shared/Vector2D.js"}],"shared/Triangle.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Triangle = /*#__PURE__*/function () {
+  function Triangle() {
+    var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10;
+    var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
+    var width = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 10;
+    var height = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 20;
+    var color = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "#ffff00";
+    var alpha = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1;
+    var isEmpty = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : false;
+
+    _classCallCheck(this, Triangle);
+
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.color = color;
+    this.alpha = alpha;
+    this.isEmpty = isEmpty;
+  }
+  /**
+   *
+   * @param {CanvasRenderingContext2D} context
+   */
+
+
+  _createClass(Triangle, [{
+    key: "draw",
+    value: function draw(context) {
+      context.save();
+
+      if (this.isEmpty) {
+        context.strokeStyle = this.color;
+      } else {
+        context.globalAlpha = this.alpha;
+        context.fillStyle = this.color;
+      }
+
+      context.beginPath();
+      context.moveTo(this.x, this.y);
+      context.lineTo(this.x + this.width, this.y);
+      context.lineTo(this.x + this.width / 2, this.y - this.height);
+      context.lineTo(this.x, this.y);
+      context.closePath();
+
+      if (this.isEmpty) {
+        context.stroke();
+      } else {
+        context.fill();
+      }
+
+      context.restore();
+    }
+  }]);
+
+  return Triangle;
+}();
+
+exports.default = Triangle;
+},{}],"shared/Rocket.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _Ball2 = require("./Ball2");
+
+var _Triangle = _interopRequireDefault(require("./Triangle"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var Rocket = /*#__PURE__*/function (_Ball) {
+  _inherits(Rocket, _Ball);
+
+  var _super = _createSuper(Rocket);
+
+  function Rocket() {
+    var _this;
+
+    var width = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 20;
+    var height = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 40;
+    var color = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "#0000ff";
+    var mass = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
+
+    _classCallCheck(this, Rocket);
+
+    _this = _super.call(this, {
+      color: color,
+      mass: mass
+    });
+    _this.width = width;
+    _this.height = height;
+    return _this;
+  }
+  /**
+   *
+   * @param {CanvasRenderingContext2D} context
+   * @param {boolean} isFiring
+   */
+
+
+  _createClass(Rocket, [{
+    key: "draw",
+    value: function draw(context, isFiring) {
+      if (isFiring) {
+        var exhaust = new _Triangle.default(this.x, this.y + 0.5 * this.height, this.width, this.height, "#ffff00", 0.8);
+        exhaust.draw(context);
+      }
+
+      var capsule = new _Triangle.default(this.x, this.y, this.width, this.height, this.color);
+      capsule.draw(context);
+    }
+  }]);
+
+  return Rocket;
+}(_Ball2.Ball);
+
+exports.default = Rocket;
+},{"./Ball2":"shared/Ball2.js","./Triangle":"shared/Triangle.js"}],"simulations/rocket-test.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = RocketTest;
+
+var _Vector2D = require("../shared/Vector2D");
+
+var _Ball = require("../shared/Ball2");
+
+var _Rocket = _interopRequireDefault(require("../shared/Rocket"));
+
+var _Force = _interopRequireDefault(require("../shared/Force"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ *
+ * @param {HTMLCanvasElement} canvas
+ * @param {CanvasRenderingContext2D} context
+ * @param {HTMLCanvasElement} canvas_bg
+ * @param {CanvasRenderingContext2D} context_bg
+ */
+function RocketTest(canvas, context, canvas_bg, context_bg) {
+  var rocket, planet, massPlanet, centerPlanet, radiusPlanetSquared;
+  var G = 0.1,
+      dmdt = 0.5,
+      dmdtSide = 0.1,
+      fuelMass = 3.5,
+      fuelSideMass = 3.5;
+  var fuelUsed = 0,
+      fuelSideUsed = 0;
+  var ve = new _Vector2D.Vector2D(0, 200);
+  var veSide = new _Vector2D.Vector2D(-100, 0);
+  var applyTrust = false;
+  var showExhaust = true;
+  var orientation = 1;
+  var animId, t0, dt, acc, force;
+  window.onload = init;
+
+  function init() {
+    //   create starts
+    for (var i = 0; i < 100; i++) {
+      var star = new _Ball.Ball({
+        color: "#ffff00",
+        radius: 1
+      });
+      star.pos2D = new _Vector2D.Vector2D(Math.random() * canvas_bg.width, Math.random() * canvas_bg.height);
+      star.draw(context_bg);
+    } // create a stationary planet
+
+
+    planet = new _Ball.Ball({
+      radius: 100,
+      color: "#0033ff",
+      mass: 1e6
+    });
+    planet.pos2D = new _Vector2D.Vector2D(400, 400);
+    planet.draw(context_bg);
+    massPlanet = planet.mass;
+    centerPlanet = planet.pos2D;
+    radiusPlanetSquared = Math.pow(planet.radius, 2); // create rocket
+
+    context.fillStyle = "#000";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    rocket = new _Rocket.default(12, 12, "#cccccc", 10);
+    rocket.pos2D = new _Vector2D.Vector2D(400, 300);
+    rocket.draw(context, showExhaust); // set up event listeners
+
+    window.addEventListener("keydown", startSideThrust, false);
+    window.addEventListener("keyUp", stopSideTrust, false); // launch the rocket
+
+    t0 = Date.now();
+    animFrame();
+  }
+
+  function animFrame() {
+    animId = requestAnimationFrame(animFrame, canvas);
+    onTimer();
+  }
+
+  function onTimer() {
+    var t1 = Date.now();
+    dt = 0.001 * (t1 - t0);
+    if (dt > 0.2) dt = 0;
+    t0 = t1;
+    move();
+  }
+
+  function move() {
+    moveObjects();
+    calcForces();
+    updateAccel();
+    updateVelo();
+    updateMass();
+    monitor();
+  }
+
+  function moveObjects() {
+    rocket.pos2D = rocket.pos2D.addScaled(rocket.velo2D, dt);
+    context.fillStyle = "#000";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    rocket.draw(context, showExhaust);
+  }
+
+  function calcForces() {
+    var gravity = _Force.default.gravity(G, massPlanet, rocket.mass, rocket.pos2D.subtract(centerPlanet));
+
+    var thrust = new _Vector2D.Vector2D(0, 0);
+    var thrustSide = new _Vector2D.Vector2D(0, 0);
+
+    if (fuelUsed < fuelMass) {
+      thrust = ve.scaleBy(-dmdt);
+    }
+
+    if (fuelSideUsed < fuelSideMass && applyTrust) {
+      thrustSide = veSide.scaleBy(-dmdtSide * orientation);
+    }
+
+    force = _Force.default.add([gravity, thrust, thrustSide]);
+  }
+
+  function updateAccel() {
+    acc = force.scaleBy(1 / rocket.mass);
+  }
+
+  function updateVelo() {
+    rocket.velo2D = rocket.velo2D.addScaled(acc, dt);
+  }
+
+  function updateMass() {
+    if (fuelUsed < fuelMass) {
+      fuelUsed += dmdt * dt;
+      rocket.mass += -dmdt * dt;
+    }
+
+    if (fuelSideUsed < fuelSideMass && applyTrust) {
+      fuelSideUsed += dmdtSide * dt;
+      rocket.mass += -dmdtSide * dt;
+    }
+  }
+
+  function monitor() {
+    if (showExhaust && fuelUsed >= fuelMass) {
+      showExhaust = false;
+    }
+
+    if (rocket.pos2D.subtract(centerPlanet).lengthSquared() < radiusPlanetSquared) {
+      stop();
+    }
+  }
+
+  function startSideThrust(e) {
+    if (e.keyCode === 39) {
+      //right arrow
+      applyTrust = true;
+      orientation = 1;
+    }
+
+    if (e.keyCode === 47) {
+      // left arrow
+      applyTrust = false;
+      orientation = -1;
+    }
+  }
+
+  function stopSideTrust() {
+    applyTrust = false;
+  }
+
+  function stop() {
+    cancelAnimationFrame(animId);
+  }
+}
+},{"../shared/Vector2D":"shared/Vector2D.js","../shared/Ball2":"shared/Ball2.js","../shared/Rocket":"shared/Rocket.js","../shared/Force":"shared/Force.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _ballParticle = _interopRequireDefault(require("./simulations/ball-particle"));
@@ -2029,6 +2361,8 @@ var _obits = _interopRequireDefault(require("./simulations/obits"));
 
 var _twoMasses = _interopRequireDefault(require("./simulations/two-masses"));
 
+var _rocketTest = _interopRequireDefault(require("./simulations/rocket-test"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var canvas = document.querySelector("canvas");
@@ -2036,7 +2370,8 @@ var context = canvas.getContext("2d");
 var canvas_bg = document.querySelector(".canvas_bg");
 var context_bg = canvas_bg.getContext("2d"); // CollisionTest(canvas, context);
 
-(0, _twoMasses.default)(canvas, context, canvas_bg, context_bg); // Orbits(canvas, context, canvas_bg, context_bg);
+(0, _rocketTest.default)(canvas, context, canvas_bg, context_bg); // TwoMasses(canvas, context, canvas_bg, context_bg);
+// Orbits(canvas, context, canvas_bg, context_bg);
 // ProjectileEnergy(canvas, context, canvas_bg, context_bg);
 // FloatingBall(canvas, context, canvas_bg, context_bg);
 // ForceExample(canvas, context, canvas_bg, context_bg);
@@ -2046,7 +2381,7 @@ var context_bg = canvas_bg.getContext("2d"); // CollisionTest(canvas, context);
 // Calculus(canvas, context);
 // GraphFn(canvas, context);
 // ProjectileTest(canvas, context);
-},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js","./simulations/obits":"simulations/obits.js","./simulations/two-masses":"simulations/two-masses.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js","./simulations/obits":"simulations/obits.js","./simulations/two-masses":"simulations/two-masses.js","./simulations/rocket-test":"simulations/rocket-test.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2074,7 +2409,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49203" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57984" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
