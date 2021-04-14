@@ -131,4 +131,30 @@ export class Vector2D {
   static angleBetween(vec1, vec2) {
     return Math.acos(vec1.dotProduct(vec2) / (vec1.length() * vec2.length()));
   }
+
+  /**
+   * Returns a vector with a specified magnitude and angle
+   * @param {Number} mag
+   * @param {Number} angle
+   * @param {boolean} clockwise
+   */
+  static vector2D(mag, angle, clockwise = true) {
+    debugger;
+    let vec = new Vector2D(mag * Math.cos(angle), mag * Math.sin(angle));
+    if (!clockwise) vec.y *= -1;
+    return vec;
+  }
+
+  /**
+   * Returns a perpandicular vector or length u
+   * @param {Number} u
+   * @param {boolean} anticlockwise
+   */
+  perp(u, anticlockwise = true) {
+    const length = this.length();
+    if (length === 0) return new Vector2D(0, 0);
+
+    const vec = new Vector2D(this.y, -this.x);
+    return anticlockwise ? vec.scaleBy(u / length) : vec.scaleBy(-u / length);
+  }
 }

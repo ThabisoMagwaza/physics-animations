@@ -280,6 +280,21 @@ var Vector2D = /*#__PURE__*/function () {
      * @returns {Number} disctance between vec1 and vec2
      */
 
+  }, {
+    key: "perp",
+    value:
+    /**
+     * Returns a perpandicular vector or length u
+     * @param {Number} u
+     * @param {boolean} anticlockwise
+     */
+    function perp(u) {
+      var anticlockwise = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      var length = this.length();
+      if (length === 0) return new Vector2D(0, 0);
+      var vec = new Vector2D(this.y, -this.x);
+      return anticlockwise ? vec.scaleBy(u / length) : vec.scaleBy(-u / length);
+    }
   }], [{
     key: "distance",
     value: function distance(vec1, vec2) {
@@ -296,6 +311,22 @@ var Vector2D = /*#__PURE__*/function () {
     key: "angleBetween",
     value: function angleBetween(vec1, vec2) {
       return Math.acos(vec1.dotProduct(vec2) / (vec1.length() * vec2.length()));
+    }
+    /**
+     * Returns a vector with a specified magnitude and angle
+     * @param {Number} mag
+     * @param {Number} angle
+     * @param {boolean} clockwise
+     */
+
+  }, {
+    key: "vector2D",
+    value: function vector2D(mag, angle) {
+      var clockwise = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+      debugger;
+      var vec = new Vector2D(mag * Math.cos(angle), mag * Math.sin(angle));
+      if (!clockwise) vec.y *= -1;
+      return vec;
     }
   }]);
 
@@ -2334,7 +2365,125 @@ function RocketTest(canvas, context, canvas_bg, context_bg) {
     cancelAnimationFrame(animId);
   }
 }
-},{"../shared/Vector2D":"shared/Vector2D.js","../shared/Ball2":"shared/Ball2.js","../shared/Rocket":"shared/Rocket.js","../shared/Force":"shared/Force.js"}],"index.js":[function(require,module,exports) {
+},{"../shared/Vector2D":"shared/Vector2D.js","../shared/Ball2":"shared/Ball2.js","../shared/Rocket":"shared/Rocket.js","../shared/Force":"shared/Force.js"}],"simulations/sliding.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = Sliding;
+
+var _Ball = require("../shared/Ball2");
+
+var _Force = _interopRequireDefault(require("../shared/Force"));
+
+var _Vector2D = require("../shared/Vector2D");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ *
+ * @param {HTMLCanvasElement} canvas
+ * @param {CanvasRenderingContext2D} context
+ * @param {HTMLCanvasElement} canvas_bg
+ * @param {CanvasRenderingContext2D} context_bg
+ */
+function Sliding(canvas, context, canvas_bg, context_bg) {
+  var ball;
+  var m = 1;
+  var g = 10;
+  var ck = 0.2; // coeff of kinetic friction
+
+  var cs = 0.25; // coeff of stating friction
+
+  var vtol = 0.000001; // tolarance
+  // inclined plane
+
+  var xtop = 50,
+      ytop = 150,
+      xbot = 450,
+      ybot = 250;
+  var angle = Math.atan2(ytop - ybot, xtop - xbot); // angle of incline
+
+  var t0, dt, animId, force, acc;
+  window.onload = init;
+
+  function init() {
+    //   create ball
+    ball = new _Ball.Ball({
+      radius: 20,
+      color: "#0000ff",
+      mass: m,
+      gradient: true
+    });
+    ball.pos2D = new _Vector2D.Vector2D(50, 130);
+    ball.velo2D = new _Vector2D.Vector2D(0, 0);
+    ball.draw(context); // create an inclined plane
+
+    context_bg.strokeStyle = "#333333";
+    context_bg.beginPath();
+    context_bg.moveTo(xtop, ytop);
+    context_bg.lineTo(xbot, ybot);
+    context_bg.closePath();
+    context_bg.stroke(); // make ball move
+
+    t0 = Date.now();
+    animFrame();
+  }
+
+  function animFrame() {
+    animId = requestAnimationFrame(animFrame, canvas);
+    onTimer();
+  }
+
+  function onTimer() {
+    var t1 = Date.now();
+    dt = 0.001 * (t1 - t0);
+    if (dt > 0.2) dt = 0;
+    t0 = t1;
+    move();
+  }
+
+  function move() {
+    moveObject();
+    calcForces();
+    updateAccel();
+    updateVelo();
+  }
+
+  function moveObject() {
+    ball.pos2D = ball.pos2D.addScaled(ball.velo2D, dt);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    ball.draw(context);
+  }
+
+  function calcForces() {
+    var gravity = _Force.default.constantGravity(m, g);
+
+    var normal = _Vector2D.Vector2D.vector2D(m * g * Math.cos(angle), 0.5 * Math.PI - angle, false);
+
+    var coeff;
+
+    if (ball.velo2D.length() < vtol) {
+      coeff = Math.min(cs * normal.length(), m * g * Math.sin(angle)); // static friction
+    } else {
+      coeff = ck * normal.length(); // kinetic friction
+    }
+
+    var friction = normal.perp(coeff);
+    force = _Force.default.add([gravity, friction, normal]);
+    debugger;
+  }
+
+  function updateAccel() {
+    acc = force.scaleBy(1 / m);
+  }
+
+  function updateVelo() {
+    ball.velo2D = ball.velo2D.addScaled(acc, dt);
+  }
+}
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _ballParticle = _interopRequireDefault(require("./simulations/ball-particle"));
@@ -2363,6 +2512,8 @@ var _twoMasses = _interopRequireDefault(require("./simulations/two-masses"));
 
 var _rocketTest = _interopRequireDefault(require("./simulations/rocket-test"));
 
+var _sliding = _interopRequireDefault(require("./simulations/sliding"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var canvas = document.querySelector("canvas");
@@ -2370,7 +2521,8 @@ var context = canvas.getContext("2d");
 var canvas_bg = document.querySelector(".canvas_bg");
 var context_bg = canvas_bg.getContext("2d"); // CollisionTest(canvas, context);
 
-(0, _rocketTest.default)(canvas, context, canvas_bg, context_bg); // TwoMasses(canvas, context, canvas_bg, context_bg);
+(0, _sliding.default)(canvas, context, canvas_bg, context_bg); // RocketTest(canvas, context, canvas_bg, context_bg);
+// TwoMasses(canvas, context, canvas_bg, context_bg);
 // Orbits(canvas, context, canvas_bg, context_bg);
 // ProjectileEnergy(canvas, context, canvas_bg, context_bg);
 // FloatingBall(canvas, context, canvas_bg, context_bg);
@@ -2381,7 +2533,7 @@ var context_bg = canvas_bg.getContext("2d"); // CollisionTest(canvas, context);
 // Calculus(canvas, context);
 // GraphFn(canvas, context);
 // ProjectileTest(canvas, context);
-},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js","./simulations/obits":"simulations/obits.js","./simulations/two-masses":"simulations/two-masses.js","./simulations/rocket-test":"simulations/rocket-test.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js","./simulations/obits":"simulations/obits.js","./simulations/two-masses":"simulations/two-masses.js","./simulations/rocket-test":"simulations/rocket-test.js","./simulations/sliding":"simulations/sliding.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
