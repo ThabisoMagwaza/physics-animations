@@ -13,6 +13,7 @@ export default function Balloon(canvas, context, canvas_bg, context_bg) {
   let ball, t0, dt;
   const m = 1;
   const g = 10;
+  const k = 0.001; // drag coefficient
   let force, acc;
 
   let rhoP = 1.1;
@@ -96,7 +97,8 @@ export default function Balloon(canvas, context, canvas_bg, context_bg) {
     const gravity = Force.constantGravity(m, g);
     const V = m / rhoP; // volume of displaced air
     const upthrust = Force.upthrust(rho, V, g);
-    force = Force.add([gravity, upthrust]);
+    const drag = Force.drag(k, ball.velo2D);
+    force = Force.add([gravity, upthrust, drag]);
   }
 
   function updateAccel() {

@@ -20,7 +20,7 @@ export default class Force {
   }
 
   /**
-   *
+   * Drag force at low velocities (linear drag)
    * @param {Number} k drag coefficeint
    * @param {Vector2D} vel velocity
    */
@@ -29,6 +29,20 @@ export default class Force {
     const velMag = vel.length();
     velMag > 0 ? (force = vel.scaleBy(-k)) : (force = new Vector2D(0, 0));
 
+    return force;
+  }
+
+  /**
+   * Drag force at high velocities (quadratic drag)
+   * @param {Number} k drag coefficient
+   * @param {Vector2D} vel velocity
+   */
+  static drag(k, vel) {
+    let force;
+    const velMag = vel.length();
+    velMag > 0
+      ? (force = vel.scaleBy(-k * velMag))
+      : (force = new Vector2D(0, 0));
     return force;
   }
 

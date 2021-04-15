@@ -1207,7 +1207,7 @@ var Force = /*#__PURE__*/function () {
       return new _Vector2D.Vector2D(0, m * g);
     }
     /**
-     *
+     * Drag force at low velocities (linear drag)
      * @param {Number} k drag coefficeint
      * @param {Vector2D} vel velocity
      */
@@ -1218,6 +1218,20 @@ var Force = /*#__PURE__*/function () {
       var force;
       var velMag = vel.length();
       velMag > 0 ? force = vel.scaleBy(-k) : force = new _Vector2D.Vector2D(0, 0);
+      return force;
+    }
+    /**
+     * Drag force at high velocities (quadratic drag)
+     * @param {Number} k drag coefficient
+     * @param {Vector2D} vel velocity
+     */
+
+  }, {
+    key: "drag",
+    value: function drag(k, vel) {
+      var force;
+      var velMag = vel.length();
+      velMag > 0 ? force = vel.scaleBy(-k * velMag) : force = new _Vector2D.Vector2D(0, 0);
       return force;
     }
     /**
@@ -2515,6 +2529,8 @@ function Balloon(canvas, context, canvas_bg, context_bg) {
   var ball, t0, dt;
   var m = 1;
   var g = 10;
+  var k = 0.001; // drag coefficient
+
   var force, acc;
   var rhoP = 1.1;
   var rhoInc = 0.001; // number by which to increment rho
@@ -2590,7 +2606,9 @@ function Balloon(canvas, context, canvas_bg, context_bg) {
 
     var upthrust = _Force.default.upthrust(rho, V, g);
 
-    force = _Force.default.add([gravity, upthrust]);
+    var drag = _Force.default.drag(k, ball.velo2D);
+
+    force = _Force.default.add([gravity, upthrust, drag]);
   }
 
   function updateAccel() {
@@ -2682,7 +2700,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61678" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60639" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
