@@ -12,6 +12,7 @@ import Orbits from "./simulations/obits";
 import TwoMasses from "./simulations/two-masses";
 import RocketTest from "./simulations/rocket-test";
 import Sliding from "./simulations/sliding";
+import Balloon from "./simulations/Balloon";
 
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
@@ -19,7 +20,8 @@ const canvas_bg = document.querySelector(".canvas_bg");
 const context_bg = canvas_bg.getContext("2d");
 
 // CollisionTest(canvas, context);
-Sliding(canvas, context, canvas_bg, context_bg);
+Balloon(canvas, context, canvas_bg, context_bg);
+// Sliding(canvas, context, canvas_bg, context_bg);
 // RocketTest(canvas, context, canvas_bg, context_bg);
 // TwoMasses(canvas, context, canvas_bg, context_bg);
 // Orbits(canvas, context, canvas_bg, context_bg);

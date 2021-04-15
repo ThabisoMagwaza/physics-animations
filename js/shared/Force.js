@@ -57,4 +57,8 @@ export default class Force {
       ? new Vector2D(0, 0)
       : r.scaleBy((-G * m1 * m2) / r.length() ** 3);
   }
+
+  static upthrust(rho, V, g) {
+    return new Vector2D(0, -rho * V * g);
+  }
 }

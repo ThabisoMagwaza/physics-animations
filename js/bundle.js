@@ -1247,6 +1247,11 @@ var Force = /*#__PURE__*/function () {
     value: function gravity(G, m1, m2, r) {
       return r.length() == 0 ? new _Vector2D.Vector2D(0, 0) : r.scaleBy(-G * m1 * m2 / Math.pow(r.length(), 3));
     }
+  }, {
+    key: "upthrust",
+    value: function upthrust(rho, V, g) {
+      return new _Vector2D.Vector2D(0, -rho * V * g);
+    }
   }]);
 
   return Force;
@@ -2483,6 +2488,119 @@ function Sliding(canvas, context, canvas_bg, context_bg) {
     ball.velo2D = ball.velo2D.addScaled(acc, dt);
   }
 }
+},{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Vector2D":"shared/Vector2D.js"}],"simulations/Balloon.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = Balloon;
+
+var _Ball = require("../shared/Ball2");
+
+var _Force = _interopRequireDefault(require("../shared/Force"));
+
+var _Vector2D = require("../shared/Vector2D");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ *
+ * @param {HTMLCanvasElement} canvas
+ * @param {CanvasRenderingContext2D} context
+ * @param {HTMLCanvasElement} canvas_bg
+ * @param {CanvasRenderingContext2D} context_bg
+ */
+function Balloon(canvas, context, canvas_bg, context_bg) {
+  var ball, t0, dt;
+  var m = 1;
+  var g = 10;
+  var force, acc;
+  var rhoP = 1.1;
+  var rhoInc = 0.001; // number by which to increment rho
+
+  var rho = 1.2;
+  var skyGradient;
+  window.onload = init;
+
+  function init() {
+    // draw background
+    context_bg.fillStyle = "#00ff55";
+    context_bg.fillRect(0, 500, canvas.width, 100);
+    skyGradient = context.createLinearGradient(canvas.width / 2, 0, canvas.width / 2, canvas.height);
+    skyGradient.addColorStop(0, "#ffffff");
+    skyGradient.addColorStop(1, "#0055ff");
+    context.fillStyle = skyGradient;
+    context.fillRect(0, 0, canvas.width, canvas.height); // initialize ball
+
+    ball = new _Ball.Ball({
+      radius: 20,
+      color: "#ff0000",
+      gradient: true,
+      mass: m
+    });
+    ball.pos2D = new _Vector2D.Vector2D(425, 480);
+    ball.draw(context); // add event listeners
+
+    addEventListener("keydown", changeDensity, false); // initialize animation
+
+    t0 = Date.now();
+    animFrame();
+  }
+
+  function animFrame() {
+    requestAnimationFrame(animFrame, canvas);
+    onTimer();
+  }
+
+  function onTimer() {
+    var t1 = Date.now();
+    dt = 0.001 * (t1 - t0);
+    if (dt > 0.2) dt = 0;
+    t0 = t1;
+    move();
+  }
+
+  function move() {
+    moveObject();
+    calcForces();
+    updateAccel();
+    updateVelo();
+  }
+
+  function changeDensity(e) {
+    if (e.keyCode === 38) rhoP += rhoInc; // up arrow
+
+    if (e.keyCode === 40) rhoP -= rhoInc; // down arrow
+
+    console.log(rhoP);
+  }
+
+  function moveObject() {
+    ball.pos2D = ball.pos2D.addScaled(ball.velo2D, dt);
+    context.fillStyle = skyGradient;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    ball.draw(context);
+  }
+
+  function calcForces() {
+    var gravity = _Force.default.constantGravity(m, g);
+
+    var V = m / rhoP; // volume of displaced air
+
+    var upthrust = _Force.default.upthrust(rho, V, g);
+
+    force = _Force.default.add([gravity, upthrust]);
+  }
+
+  function updateAccel() {
+    acc = force.scaleBy(1 / m);
+  }
+
+  function updateVelo() {
+    ball.velo2D = ball.velo2D.addScaled(acc, dt);
+  }
+}
 },{"../shared/Ball2":"shared/Ball2.js","../shared/Force":"shared/Force.js","../shared/Vector2D":"shared/Vector2D.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
@@ -2514,6 +2632,8 @@ var _rocketTest = _interopRequireDefault(require("./simulations/rocket-test"));
 
 var _sliding = _interopRequireDefault(require("./simulations/sliding"));
 
+var _Balloon = _interopRequireDefault(require("./simulations/Balloon"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var canvas = document.querySelector("canvas");
@@ -2521,7 +2641,8 @@ var context = canvas.getContext("2d");
 var canvas_bg = document.querySelector(".canvas_bg");
 var context_bg = canvas_bg.getContext("2d"); // CollisionTest(canvas, context);
 
-(0, _sliding.default)(canvas, context, canvas_bg, context_bg); // RocketTest(canvas, context, canvas_bg, context_bg);
+(0, _Balloon.default)(canvas, context, canvas_bg, context_bg); // Sliding(canvas, context, canvas_bg, context_bg);
+// RocketTest(canvas, context, canvas_bg, context_bg);
 // TwoMasses(canvas, context, canvas_bg, context_bg);
 // Orbits(canvas, context, canvas_bg, context_bg);
 // ProjectileEnergy(canvas, context, canvas_bg, context_bg);
@@ -2533,7 +2654,7 @@ var context_bg = canvas_bg.getContext("2d"); // CollisionTest(canvas, context);
 // Calculus(canvas, context);
 // GraphFn(canvas, context);
 // ProjectileTest(canvas, context);
-},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js","./simulations/obits":"simulations/obits.js","./simulations/two-masses":"simulations/two-masses.js","./simulations/rocket-test":"simulations/rocket-test.js","./simulations/sliding":"simulations/sliding.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js","./simulations/obits":"simulations/obits.js","./simulations/two-masses":"simulations/two-masses.js","./simulations/rocket-test":"simulations/rocket-test.js","./simulations/sliding":"simulations/sliding.js","./simulations/Balloon":"simulations/Balloon.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2561,7 +2682,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57984" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61678" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
