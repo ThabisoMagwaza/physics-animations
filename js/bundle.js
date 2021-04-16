@@ -2529,7 +2529,7 @@ function Balloon(canvas, context, canvas_bg, context_bg) {
   var ball, t0, dt;
   var m = 1;
   var g = 10;
-  var k = 0.001; // drag coefficient
+  var k = 0.01; // drag coefficient
 
   var force, acc;
   var rhoP = 1.1;
@@ -2658,14 +2658,14 @@ var canvas = document.querySelector("canvas");
 var context = canvas.getContext("2d");
 var canvas_bg = document.querySelector(".canvas_bg");
 var context_bg = canvas_bg.getContext("2d"); // CollisionTest(canvas, context);
-
-(0, _Balloon.default)(canvas, context, canvas_bg, context_bg); // Sliding(canvas, context, canvas_bg, context_bg);
+// Balloon(canvas, context, canvas_bg, context_bg);
+// Sliding(canvas, context, canvas_bg, context_bg);
 // RocketTest(canvas, context, canvas_bg, context_bg);
 // TwoMasses(canvas, context, canvas_bg, context_bg);
 // Orbits(canvas, context, canvas_bg, context_bg);
 // ProjectileEnergy(canvas, context, canvas_bg, context_bg);
-// FloatingBall(canvas, context, canvas_bg, context_bg);
-// ForceExample(canvas, context, canvas_bg, context_bg);
+
+(0, _floatingBall.default)(canvas, context, canvas_bg, context_bg); // ForceExample(canvas, context, canvas_bg, context_bg);
 // EnergyExample(canvas, context, canvas_bg, context_bg);
 // ballParticles(canvas, context);
 // bouncingBall(canvas, context);

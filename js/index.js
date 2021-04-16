@@ -20,13 +20,13 @@ const canvas_bg = document.querySelector(".canvas_bg");
 const context_bg = canvas_bg.getContext("2d");
 
 // CollisionTest(canvas, context);
-Balloon(canvas, context, canvas_bg, context_bg);
+// Balloon(canvas, context, canvas_bg, context_bg);
 // Sliding(canvas, context, canvas_bg, context_bg);
 // RocketTest(canvas, context, canvas_bg, context_bg);
 // TwoMasses(canvas, context, canvas_bg, context_bg);
 // Orbits(canvas, context, canvas_bg, context_bg);
 // ProjectileEnergy(canvas, context, canvas_bg, context_bg);
-// FloatingBall(canvas, context, canvas_bg, context_bg);
+FloatingBall(canvas, context, canvas_bg, context_bg);
 // ForceExample(canvas, context, canvas_bg, context_bg);
 // EnergyExample(canvas, context, canvas_bg, context_bg);
 // ballParticles(canvas, context);

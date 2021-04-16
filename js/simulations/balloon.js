@@ -13,7 +13,7 @@ export default function Balloon(canvas, context, canvas_bg, context_bg) {
   let ball, t0, dt;
   const m = 1;
   const g = 10;
-  const k = 0.001; // drag coefficient
+  const k = 0.01; // drag coefficient
   let force, acc;
 
   let rhoP = 1.1;
