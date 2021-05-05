@@ -12,7 +12,10 @@ Environment.prototype.clearCanvas = function (ctx) {
 };
 
 export default function bouncingBall(canvas, context) {
-  window.onload = init;
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  // window.onload = init;
+  init();
 
   let env, ballCANVAS, CURRENT_TIME;
 

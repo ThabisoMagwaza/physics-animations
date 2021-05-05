@@ -590,7 +590,9 @@ Environment.prototype.clearCanvas = function (ctx) {
 };
 
 function bouncingBall(canvas, context) {
-  window.onload = init;
+  context.clearRect(0, 0, canvas.width, canvas.height); // window.onload = init;
+
+  init();
   var env, ballCANVAS, CURRENT_TIME; // DRAG AND DROP
 
   canvas.addEventListener("mousemove", function (e) {
@@ -1536,10 +1538,13 @@ function FloatingBall(canvas, context, canvas_bg, context_bg) {
       rho = 1.5,
       V = 1,
       ylevel = 300,
-      vfac = -0.8;
-  window.onload = init;
+      vfac = -0.8; // window.onload = init;
+
+  init();
 
   function init() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context_bg.clearRect(0, 0, canvas.width, canvas.height);
     ball = new _Ball.Ball({
       radius: 40,
       color: "#0000ff",
@@ -1845,10 +1850,13 @@ function Orbits(canvas, context, canvas_bg, context_bg) {
 
   var G = 1;
   var numStars = 100;
-  var t0, dt, animId, force, acc;
-  window.onload = init;
+  var t0, dt, animId, force, acc; // window.onload = init;
+
+  init();
 
   function init() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context_bg.clearRect(0, 0, canvas.width, canvas.height);
     drawStars(); // create stationary sun
 
     sun = new _Ball.Ball({
@@ -2441,14 +2449,17 @@ function Sliding(canvas, context, canvas_bg, context_bg) {
   var xtop = 50,
       ytop = 150,
       xbot = 450,
-      ybot = 250;
+      ybot = 350;
   var angle = Math.atan2(ytop - ybot, xtop - xbot); // angle of incline
 
-  var t0, dt, animId, force, acc;
-  window.onload = init;
+  var t0, dt, animId, force, acc; // window.onload = init;
+
+  init();
 
   function init() {
-    //   create ball
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context_bg.clearRect(0, 0, canvas.width, canvas.height); //   create ball
+
     ball = new _Ball.Ball({
       radius: 20,
       color: "#0000ff",
@@ -2679,17 +2690,24 @@ var context = canvas.getContext("2d");
 var canvas_bg = document.querySelector(".canvas_bg");
 var context_bg = canvas_bg.getContext("2d"); // CollisionTest(canvas, context);
 // Balloon(canvas, context, canvas_bg, context_bg);
-// Sliding(canvas, context, canvas_bg, context_bg);
-// RocketTest(canvas, context, canvas_bg, context_bg);
-// TwoMasses(canvas, context, canvas_bg, context_bg);
-// Orbits(canvas, context, canvas_bg, context_bg);
-// ProjectileEnergy(canvas, context, canvas_bg, context_bg);
 
-(0, _floatingBall.default)(canvas, context, canvas_bg, context_bg); // ForceExample(canvas, context, canvas_bg, context_bg);
+document.querySelector(".btn-slide").onclick = function () {
+  return (0, _sliding.default)(canvas, context, canvas_bg, context_bg);
+}; // RocketTest(canvas, context, canvas_bg, context_bg);
+// TwoMasses(canvas, context, canvas_bg, context_bg);
+
+
+document.querySelector(".btn-orbits").onclick = function () {
+  return (0, _obits.default)(canvas, context, canvas_bg, context_bg);
+}; // ProjectileEnergy(canvas, context, canvas_bg, context_bg);
+
+
+document.querySelector(".btn-floating-ball").addEventListener("click", function () {
+  return (0, _floatingBall.default)(canvas, context, canvas_bg, context_bg);
+}); // ForceExample(canvas, context, canvas_bg, context_bg);
 // EnergyExample(canvas, context, canvas_bg, context_bg);
-// ballParticles(canvas, context);
-// bouncingBall(canvas, context);
-// Calculus(canvas, context);
+
+(0, _bouncingBall.default)(canvas, context); // Calculus(canvas, context);
 // GraphFn(canvas, context);
 // ProjectileTest(canvas, context);
 },{"./simulations/ball-particle":"simulations/ball-particle.js","./simulations/bouncing-ball":"simulations/bouncing-ball.js","./simulations/calculus":"simulations/calculus.js","./simulations/graph":"simulations/graph.js","./simulations/projectile-test":"simulations/projectile-test.js","./simulations/force-example":"simulations/force-example.js","./simulations/energy-example":"simulations/energy-example.js","./simulations/floating-ball":"simulations/floating-ball.js","./simulations/projectile-energy":"simulations/projectile-energy.js","./simulations/collision-test":"simulations/collision-test.js","./simulations/obits":"simulations/obits.js","./simulations/two-masses":"simulations/two-masses.js","./simulations/rocket-test":"simulations/rocket-test.js","./simulations/sliding":"simulations/sliding.js","./simulations/Balloon":"simulations/Balloon.js"}],"../../../../Users/bbdnet2169/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -2720,7 +2738,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52058" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62119" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

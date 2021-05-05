@@ -9,6 +9,15 @@ body {
     height: 100vh;
     display: grid;
     place-items: center;
+    grid-template-columns: 200px 1fr;
+}
+
+.btn-container {
+    display: grid;
+    grid-template-columns: max-content;
+    grid-row-gap: 20px;
+
+    justify-self: right;
 }
 
 canvas {

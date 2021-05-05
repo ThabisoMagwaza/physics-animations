@@ -11,9 +11,13 @@ export default function FloatingBall(canvas, context, canvas_bg, context_bg) {
     ylevel = 300,
     vfac = -0.8;
 
-  window.onload = init;
+  // window.onload = init;
+  init();
 
   function init() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context_bg.clearRect(0, 0, canvas.width, canvas.height);
+
     ball = new Ball({ radius: 40, color: "#0000ff", gradient: true });
     ball.pos2D = new Vector2D(50, 50);
     ball.velo2D = new Vector2D(40, -20);

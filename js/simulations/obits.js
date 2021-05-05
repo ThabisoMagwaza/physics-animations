@@ -10,9 +10,12 @@ export default function Orbits(canvas, context, canvas_bg, context_bg) {
   const numStars = 100;
   let t0, dt, animId, force, acc;
 
-  window.onload = init;
+  // window.onload = init;
+  init();
 
   function init() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context_bg.clearRect(0, 0, canvas.width, canvas.height);
     drawStars();
     // create stationary sun
     sun = new Ball({ radius: 70, color: "#ff9900", mass: M, gradient: true });

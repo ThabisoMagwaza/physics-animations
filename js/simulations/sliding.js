@@ -20,14 +20,17 @@ export default function Sliding(canvas, context, canvas_bg, context_bg) {
   const xtop = 50,
     ytop = 150,
     xbot = 450,
-    ybot = 250;
+    ybot = 350;
 
   const angle = Math.atan2(ytop - ybot, xtop - xbot); // angle of incline
   let t0, dt, animId, force, acc;
 
-  window.onload = init;
+  // window.onload = init;
+  init();
 
   function init() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context_bg.clearRect(0, 0, canvas.width, canvas.height);
     //   create ball
     ball = new Ball({ radius: 20, color: "#0000ff", mass: m, gradient: true });
     ball.pos2D = new Vector2D(50, 130);
