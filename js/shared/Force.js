@@ -72,7 +72,24 @@ export default class Force {
       : r.scaleBy((-G * m1 * m2) / r.length() ** 3);
   }
 
+  /**
+   *
+   * @param {Number} rho Viscocity of the fluid
+   * @param {Number} V Volume of the displaced fluid
+   * @param {Number} g gravitational acceleration
+   * @returns
+   */
   static upthrust(rho, V, g) {
     return new Vector2D(0, -rho * V * g);
+  }
+
+  /**
+   * Lift force experienced
+   * @param {Number} k k = 0.5*p*A*Cd
+   * @param {Vector2D} vel
+   */
+  static lift(k, vel) {
+    const velMag = vel.length();
+    return velMag > 0 ? vel.perp(k * velMag) : new Vector2D(0, 0);
   }
 }

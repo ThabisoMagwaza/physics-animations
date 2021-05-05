@@ -1261,10 +1261,30 @@ var Force = /*#__PURE__*/function () {
     value: function gravity(G, m1, m2, r) {
       return r.length() == 0 ? new _Vector2D.Vector2D(0, 0) : r.scaleBy(-G * m1 * m2 / Math.pow(r.length(), 3));
     }
+    /**
+     *
+     * @param {Number} rho Viscocity of the fluid
+     * @param {Number} V Volume of the displaced fluid
+     * @param {Number} g gravitational acceleration
+     * @returns
+     */
+
   }, {
     key: "upthrust",
     value: function upthrust(rho, V, g) {
       return new _Vector2D.Vector2D(0, -rho * V * g);
+    }
+    /**
+     * Lift force experienced
+     * @param {Number} k k = 0.5*p*A*Cd
+     * @param {Vector2D} vel
+     */
+
+  }, {
+    key: "lift",
+    value: function lift(k, vel) {
+      var velMag = vel.length();
+      return velMag > 0 ? vel.perp(k * velMag) : new _Vector2D.Vector2D(0, 0);
     }
   }]);
 
@@ -2700,7 +2720,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60639" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52058" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
